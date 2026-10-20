@@ -16,6 +16,7 @@ Skill này giúp kỹ sư PCCC làm nhanh các việc lặp lại trên bản v�
 | `scripts/thong_so.json` | Bảng số liệu mà script dùng. Nếu người dùng sửa số theo bản gốc tiêu chuẩn thì sửa ở đây |
 | `scripts/rai_thiet_bi.py` | Rải sprinkler / đầu báo khói / đầu báo nhiệt trong các polyline phòng |
 | `scripts/thong_ke.py` | Thống kê block, chiều dài, diện tích từ nhiều DXF/DWG ra Excel |
+| `scripts/tim_phong.py` | Tự dựng polyline phòng từ nét tường, cột và cửa. Dùng khi bản vẽ nhập từ PDF hoặc chưa có polyline phòng |
 | `scripts/acad_com.py` | Tiện ích COM dùng chung (kết nối, thử lại khi AutoCAD bận, tạo layer/block) |
 
 Chạy script bằng đường dẫn tuyệt đối tới thư mục `scripts/` của skill. Mỗi script có `--help`.
@@ -34,7 +35,15 @@ Kết quả bố trí phụ thuộc hoàn toàn vào các thông số dưới đ
 - **File DXF (ezdxf, `--dxf`):** không cần mở AutoCAD, chạy nhanh, hợp với xử lý hàng loạt. Cài: `pip install ezdxf`. File DWG thì mở bằng COM, hoặc nhờ người dùng lưu sang DXF.
 - **AutoLISP:** khi người dùng muốn một lệnh gõ được ngay trong AutoCAD, hoặc dùng AutoCAD LT 2024 trở lên (LT chạy được LISP nhưng không có COM). Viết file `.lsp`, hướng dẫn nạp bằng `APPLOAD`.
 
-Nếu chưa có polyline phòng, hỏi người dùng có muốn tự vẽ trên layer `PCCC-PHONG` không. Nếu bản vẽ kiến trúc có sẵn layer tường/phòng thì đề xuất lấy từ đó, nhưng phải xác nhận trước khi dùng.
+Nếu chưa có polyline phòng (thường gặp với bản vẽ nhập từ PDF), dùng `tim_phong.py` để dựng tự động.
+- Cách làm: tô tường, cột và khung cửa sổ lên lưới 40 mm. Lỗ cửa được đóng bằng bán kính cung mở cửa nằm thẳng hàng với tường; cánh cửa không tính là vật cản. Vùng kín chính là phòng, tên phòng lấy từ chữ nằm trong vùng.
+- Việc đầu tiên là dò layer tường/cửa của bản vẽ: vẽ từng layer một màu rồi xem ảnh. Bản vẽ PDF thường có tiền tố `PDFn_…$MB$` (hàm `_hau_to` đã bỏ tiền tố này).
+- **Luôn xuất ảnh các phòng dò được để xem lại** trước khi rải thiết bị. Lỗi hay gặp:
+  - Vách kính hoặc lan can vẽ trên layer khác: thêm layer đó vào nhóm vật cản.
+  - Mặt ngoài nhà để trống: dùng `bao_theo_cot=True` để đóng biên theo hàng cột.
+  - Sân mái bị nhận là phòng: loại vùng lớn không có tên.
+  - Tên phòng nằm ngoài polygon: gán cho phòng gần nhất.
+- Nếu mặt bằng nằm trong block (mỗi tầng một block, chèn nhiều lần cho nhiều bộ tờ), dò một lần trong toạ độ block rồi cộng thêm điểm chèn của từng lần chèn.
 
 ### 3. Rải thiết bị
 ```bash

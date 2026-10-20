@@ -190,14 +190,38 @@ def tinh_phong(dg_m, tso):
     if la_truc_giao(dg_m):
         # Phòng chữ nhật / chữ L / U...: chia thành hình chữ nhật, mỗi mảnh rải lưới đối xứng
         manh = chia_hinh_chu_nhat(dg_m)
-        luoi = [luoi_hcn(h, tso) for h in manh]
+        # Dải hẹp (lối vào phòng, khe cạnh cột) không đủ chỗ giữ khoảng cách tối thiểu tới tường:
+        # chỉ rải khi các thiết bị ở mảnh rộng xung quanh không phủ tới.
+        rong_min = max(2 * tso["cach_tuong_min"], 1e-9)
+        rong = [h for h in manh if min(h[2] - h[0], h[3] - h[1]) >= rong_min] or manh
+        hep = [h for h in manh if h not in rong]
+        luoi = [luoi_hcn(h, tso) for h in rong]
+        r_phu = math.hypot(tso["khoang_cach_max"] / 2, tso["khoang_cach_max"] / 2)
+        da_co = [p for d, _, _ in luoi for p in d]
+        for h in hep:
+            goc = [(h[0], h[1]), (h[2], h[1]), (h[2], h[3]), (h[0], h[3]), ((h[0] + h[2]) / 2, (h[1] + h[3]) / 2)]
+            if any(min((math.dist(g, p) for p in da_co), default=math.inf) > r_phu for g in goc):
+                luoi.append(luoi_hcn(h, tso))
+                da_co += luoi[-1][0]
+        if len(rong) == len(manh) and min(min(h[2] - h[0], h[3] - h[1]) for h in manh) < rong_min \
+                and dien_tich(dg_m) <= tso["dien_tich_max"]:
+            # Phòng nhỏ toàn dải hẹp (WC, hốc kỹ thuật): thử 1 thiết bị ở điểm xa tường nhất
+            xs, ys = [p[0] for p in dg_m], [p[1] for p in dg_m]
+            mau = [(x, y) for x in _day(min(xs), max(xs), 0.05) for y in _day(min(ys), max(ys), 0.05)
+                   if trong_da_giac(x, y, dg_m)]
+            if mau:
+                tot = max(mau, key=lambda m: khoang_cach_tuong(*m, dg_m))
+                if all(math.dist(m, tot) <= r_phu for m in mau):
+                    luoi = [([tot], max(xs) - min(xs), max(ys) - min(ys))]
         nhom = [d for d, _, _ in luoi]
         diem = [p for d in nhom for p in d]
         sx = max(s for _, s, _ in luoi)
         sy = max(s for _, _, s in luoi)
         them = []
-        if len(manh) > 1:
-            canh_bao.append(f"Phòng được chia thành {len(manh)} hình chữ nhật, mỗi phần rải đối xứng riêng.")
+        if len(luoi) > 1:
+            canh_bao.append(f"Phòng được chia thành {len(luoi)} hình chữ nhật, mỗi phần rải đối xứng riêng.")
+        if hep and len(luoi) == len(rong):
+            canh_bao.append(f"Bỏ qua {len(hep)} dải hẹp < {rong_min:.1f} m vì đã được thiết bị bên cạnh phủ tới.")
     else:
         diem, sx, sy = rai_luoi(dg_m, tso)
         nhom = [diem]

@@ -37,7 +37,8 @@ def cho_san_sang(acad, toi_da=120):
         try:
             if acad.GetAcadState().IsQuiescent:
                 return
-        except pythoncom.com_error:
+        except (pythoncom.com_error, AttributeError):
+            # Khi đang bận, AutoCAD có thể trả về đối tượng trạng thái chưa đầy đủ
             pass
         time.sleep(1)
 
