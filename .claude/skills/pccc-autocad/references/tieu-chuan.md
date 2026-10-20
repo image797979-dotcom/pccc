@@ -41,6 +41,7 @@ Từ nhóm 4.2 trở lên, hệ bọt và các nhóm đặc biệt: tra bản g�
 
 Quy tắc bố trí hay dùng:
 - Khoảng cách từ đầu phun tới tường ≤ 1/2 khoảng cách giữa các đầu.
+- **Quy ước của người dùng:** đầu phun cách tường **tối thiểu 500 mm**, bố trí **đối xứng đều** so với phòng (`cach_tuong_min_m` trong `thong_so.json`).
 - Khoảng cách tối thiểu giữa hai đầu phun là khoảng 1,5 m, để đầu này không làm ướt đầu kia.
 - Tấm dội cách trần khoảng 0,08–0,30 m. Có dầm hoặc vật cản thì xét riêng.
 - Lưu lượng tính toán sơ bộ: Q = cường độ × diện tích tính toán. Ví dụ nhóm 2: 0,12 × 120 = 14,4 l/s.

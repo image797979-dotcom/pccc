@@ -42,12 +42,18 @@ python <skill>/scripts/rai_thiet_bi.py --com --loai sprinkler --nhom 2
 python <skill>/scripts/rai_thiet_bi.py --dxf mat_bang.dxf --loai bao_khoi --tran 3.2 --ra mat_bang_bc.dxf
 python <skill>/scripts/rai_thiet_bi.py --dxf mat_bang.dxf --loai bao_nhiet --tran 4 --chi-tinh
 ```
-Cách tính: chia lưới đều trong hình bao của phòng sao cho bước ≤ khoảng cách tối đa, khoảng cách tới tường ≤ giới hạn, và diện tích mỗi thiết bị ≤ giới hạn. Sau đó giữ lại các điểm nằm trong phòng, rồi bổ sung thiết bị cho các vùng góc chưa phủ (phòng chữ L, chữ U).
+**Nguyên tắc bố trí (quy ước của người dùng, áp dụng cả khi tự đặt thiết bị không qua script):**
+- **Đối xứng đều so với phòng:** các bước bằng nhau, hàng ngoài cùng cách tường đúng nửa bước, nên lưới đối xứng qua tâm phòng. Làm vậy bản vẽ gọn và dễ kiểm tra, và thi công đi ống thẳng hàng.
+- **Sprinkler cách tường tối thiểu 500 mm**, đồng thời không quá nửa khoảng cách tối đa giữa các đầu.
+- Phòng chữ L, U, T (các cạnh vuông góc): chia thành ít hình chữ nhật nhất, rồi mỗi hình chữ nhật rải lưới đối xứng riêng.
+- Phòng có tường xiên: rải lưới theo hình bao rồi bổ sung cho vùng chưa phủ (vẫn giữ ≥ 500 mm). Kết quả không đối xứng hoàn toàn, nên báo người dùng kiểm tra.
+
+Cách tính số hàng: chọn số hàng ít nhất sao cho bước ≤ khoảng cách tối đa, nửa bước ≤ khoảng cách tối đa tới tường, và diện tích mỗi thiết bị ≤ giới hạn. Script cảnh báo nếu thiết bị nào gần tường hơn 500 mm (phòng quá hẹp) hoặc hai đầu gần nhau hơn khoảng cách tối thiểu.
 
 Nên chạy `--chi-tinh` trước để báo cho người dùng số lượng và bước lưới, rồi mới vẽ thật.
 
 **Luôn ghi kích thước (dim) khoảng cách thiết bị.** Đây là quy ước bắt buộc của người dùng: bản vẽ PCCC nộp thẩm duyệt phải thể hiện được khoảng cách giữa các thiết bị và khoảng cách từ thiết bị tới tường để cán bộ thẩm duyệt kiểm tra với tiêu chuẩn. Script dim sẵn theo mặc định:
-- Lưới đều: một chuỗi dim ngang và một chuỗi dim dọc mỗi phòng, đi từ tường → thiết bị → … → tường.
+- Lưới đều: với mỗi hình chữ nhật của phòng, một chuỗi dim ngang qua hàng gần tâm và một chuỗi dim dọc qua cột gần tâm, đi từ tường → thiết bị → … → tường.
 - Thiết bị bổ sung ở góc phòng: dim tới tường gần nhất theo cả hai phương.
 - Dim nằm trên layer `PCCC-DIM`, style `PCCC` (vạch chéo, chữ trên đường dim), cỡ chữ theo `--ty-le` (mặc định 1:100).
 

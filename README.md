@@ -53,7 +53,6 @@ Cài thư viện: `pip install ezdxf openpyxl pywin32`
 ## Hướng phát triển
 
 - Bổ sung họng nước vách tường, bình chữa cháy, nút ấn, chuông đèn vào script rải.
-- Tách phòng chữ L/U thành các hình chữ nhật trước khi rải, để lưới đều hơn (hiện đang bổ sung điểm cho vùng góc).
 - Xét dầm, cột và vật cản khi bố trí; vẽ ống nhánh sprinkler tự động.
 - Ghép với một MCP server ở mục 1.
 

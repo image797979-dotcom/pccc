@@ -39,6 +39,7 @@ def doc_thong_so(loai, nhom=None, tran=None):
             "cach_tuong_max": n["khoang_cach_max_m"] * ts["sprinkler"]["ty_le_cach_tuong_max"],
             "dien_tich_max": n["dien_tich_max_moi_dau_m2"],
             "khoang_cach_min": ts["sprinkler"]["khoang_cach_min_m"],
+            "cach_tuong_min": ts["sprinkler"].get("cach_tuong_min_m", 0.0),
             "nguon": f"{ts['sprinkler']['_nguon']}, nhóm {nhom}",
         }
     if tran is None:
@@ -50,6 +51,7 @@ def doc_thong_so(loai, nhom=None, tran=None):
                 "cach_tuong_max": dong["cach_tuong_max_m"],
                 "dien_tich_max": dong["dien_tich_max_m2"],
                 "khoang_cach_min": 0.0,
+                "cach_tuong_min": 0.0,
                 "nguon": f"{ts[loai]['_nguon']}, trần ≤ {dong['tran_den_m']} m",
             }
     sys.exit(f"Trần {tran} m vượt bảng {loai} trong thong_so.json; tra tiêu chuẩn cho trần cao.")
@@ -74,14 +76,57 @@ def so_hang(L, buoc_max, tuong_max):
     return max(1, math.ceil(L / buoc_max - 1e-9), math.ceil(L / (2 * tuong_max) - 1e-9))
 
 
-def rai_luoi(dg, tso):
-    """Lưới đều trong hình bao của phòng, giữ các điểm nằm trong phòng.
+def khoang_cach_tuong(x, y, dg):
+    """Khoảng cách ngắn nhất từ điểm tới các cạnh phòng."""
+    tot = math.inf
+    for i in range(len(dg)):
+        (x1, y1), (x2, y2) = dg[i], dg[(i + 1) % len(dg)]
+        dx, dy = x2 - x1, y2 - y1
+        t = 0.0 if dx == dy == 0 else max(0.0, min(1.0, ((x - x1) * dx + (y - y1) * dy) / (dx * dx + dy * dy)))
+        tot = min(tot, math.hypot(x - x1 - t * dx, y - y1 - t * dy))
+    return tot
+
+
+def la_truc_giao(dg, sai_so=1e-6):
+    """Mọi cạnh phòng đều song song trục X hoặc Y (phòng chữ nhật, chữ L, U, T...)."""
+    return all(abs(dg[i][0] - dg[i - 1][0]) < sai_so or abs(dg[i][1] - dg[i - 1][1]) < sai_so
+               for i in range(len(dg)))
+
+
+def _chia_theo_x(dg):
+    """Cắt phòng trực giao thành các dải dọc tại hoành độ các đỉnh, gộp các dải liền nhau
+    có cùng khoảng y. Trả về [(x0, y0, x1, y1), ...]."""
+    xs = sorted({round(p[0], 6) for p in dg})
+    mo, truoc, hcn = {}, set(), []
+    for xa, xb in zip(xs, xs[1:]):
+        ys = sorted(round(v, 6) for v in _giao_doc(dg, (xa + xb) / 2))
+        hien = set(zip(ys[0::2], ys[1::2]))
+        for kh in truoc - hien:
+            hcn.append((mo.pop(kh), kh[0], xa, kh[1]))
+        for kh in hien - truoc:
+            mo[kh] = xa
+        truoc = hien
+    hcn += [(mo[kh], kh[0], xs[-1], kh[1]) for kh in truoc]
+    return hcn
+
+
+def chia_hinh_chu_nhat(dg):
+    """Chia phòng trực giao thành ít hình chữ nhật nhất (thử cắt dọc và cắt ngang, lấy cách
+    cho ít mảnh hơn; bằng nhau thì lấy cách có cạnh ngắn nhất lớn hơn)."""
+    doc = _chia_theo_x(dg)
+    ngang = [(y0, x0, y1, x1) for x0, y0, x1, y1 in _chia_theo_x([(y, x) for x, y in dg])]
+    canh_min = lambda ds: min(min(x1 - x0, y1 - y0) for x0, y0, x1, y1 in ds)
+    return min([doc, ngang], key=lambda ds: (len(ds), -canh_min(ds)))
+
+
+def luoi_hcn(hcn, tso):
+    """Lưới đối xứng đều trong một hình chữ nhật: bước bằng nhau, hàng ngoài cùng cách cạnh
+    đúng nửa bước, nên cả lưới đối xứng qua tâm hình chữ nhật.
 
     Đơn vị: mét. Trả về (danh sách điểm, bước x, bước y).
     """
-    xs, ys = [p[0] for p in dg], [p[1] for p in dg]
-    x0, y0 = min(xs), min(ys)
-    Lx, Ly = max(xs) - x0, max(ys) - y0
+    x0, y0, x1, y1 = hcn
+    Lx, Ly = x1 - x0, y1 - y0
     nx = so_hang(Lx, tso["khoang_cach_max"], tso["cach_tuong_max"])
     ny = so_hang(Ly, tso["khoang_cach_max"], tso["cach_tuong_max"])
     # Diện tích bảo vệ mỗi thiết bị không vượt giới hạn: tăng số hàng ở phía có bước lớn hơn
@@ -91,15 +136,18 @@ def rai_luoi(dg, tso):
         else:
             ny += 1
     sx, sy = Lx / nx, Ly / ny
-    diem = [
-        (x0 + sx * (i + 0.5), y0 + sy * (j + 0.5))
-        for i in range(nx) for j in range(ny)
-        if trong_da_giac(x0 + sx * (i + 0.5), y0 + sy * (j + 0.5), dg)
-    ]
+    diem = [(x0 + sx * (i + 0.5), y0 + sy * (j + 0.5)) for i in range(nx) for j in range(ny)]
     return diem, sx, sy
 
 
-def bo_sung_vung_trong(dg, diem, sx, sy, buoc_mau=0.25):
+def rai_luoi(dg, tso):
+    """Phòng có tường xiên: lưới đối xứng trên hình bao, giữ các điểm nằm trong phòng."""
+    xs, ys = [p[0] for p in dg], [p[1] for p in dg]
+    diem, sx, sy = luoi_hcn((min(xs), min(ys), max(xs), max(ys)), tso)
+    return [p for p in diem if trong_da_giac(*p, dg)], sx, sy
+
+
+def bo_sung_vung_trong(dg, diem, sx, sy, cach_tuong_min=0.0, buoc_mau=0.25):
     """Phòng không chữ nhật (chữ L, chữ U...) có thể còn vùng chưa phủ.
 
     Lấy mẫu dày trong phòng; điểm nào xa thiết bị gần nhất hơn nửa đường chéo ô lưới
@@ -111,7 +159,7 @@ def bo_sung_vung_trong(dg, diem, sx, sy, buoc_mau=0.25):
         (x, y)
         for x in _day(min(xs), max(xs), buoc_mau)
         for y in _day(min(ys), max(ys), buoc_mau)
-        if trong_da_giac(x, y, dg)
+        if trong_da_giac(x, y, dg) and khoang_cach_tuong(x, y, dg) >= cach_tuong_min
     ]
     # Khoảng cách từ mỗi điểm mẫu tới thiết bị gần nhất, cập nhật dần khi thêm thiết bị
     d_min = [min((math.dist(m, p) for p in diem), default=math.inf) for m in mau]
@@ -138,12 +186,29 @@ def dien_tich(dg):
 
 def tinh_phong(dg_m, tso):
     """Tính toàn bộ cho một phòng (toạ độ mét). Trả về dict kết quả + cảnh báo."""
-    diem, sx, sy = rai_luoi(dg_m, tso)
-    them = bo_sung_vung_trong(dg_m, diem, sx, sy)
-    tat_ca = diem + them
     canh_bao = []
-    if them:
-        canh_bao.append(f"Phòng không chữ nhật: đã bổ sung {len(them)} thiết bị cho vùng chưa phủ, nên kiểm tra lại bằng mắt.")
+    if la_truc_giao(dg_m):
+        # Phòng chữ nhật / chữ L / U...: chia thành hình chữ nhật, mỗi mảnh rải lưới đối xứng
+        manh = chia_hinh_chu_nhat(dg_m)
+        luoi = [luoi_hcn(h, tso) for h in manh]
+        nhom = [d for d, _, _ in luoi]
+        diem = [p for d in nhom for p in d]
+        sx = max(s for _, s, _ in luoi)
+        sy = max(s for _, _, s in luoi)
+        them = []
+        if len(manh) > 1:
+            canh_bao.append(f"Phòng được chia thành {len(manh)} hình chữ nhật, mỗi phần rải đối xứng riêng.")
+    else:
+        diem, sx, sy = rai_luoi(dg_m, tso)
+        nhom = [diem]
+        them = bo_sung_vung_trong(dg_m, diem, sx, sy, tso["cach_tuong_min"])
+        canh_bao.append("Phòng có tường xiên: lưới theo hình bao, không đối xứng hoàn toàn, nên kiểm tra lại bằng mắt."
+                        + (f" Đã bổ sung {len(them)} thiết bị cho vùng chưa phủ." if them else ""))
+    tat_ca = diem + them
+    if tso["cach_tuong_min"] > 0:
+        for x, y in tat_ca:
+            if khoang_cach_tuong(x, y, dg_m) < tso["cach_tuong_min"] - 1e-6:
+                canh_bao.append(f"Thiết bị tại ({x:.2f}, {y:.2f}) cách tường < {tso['cach_tuong_min']} m.")
     if tso["khoang_cach_min"] > 0:
         for i in range(len(tat_ca)):
             for j in range(i + 1, len(tat_ca)):
@@ -151,7 +216,7 @@ def tinh_phong(dg_m, tso):
                     canh_bao.append(f"Hai thiết bị cách nhau < {tso['khoang_cach_min']} m tại "
                                     f"({tat_ca[i][0]:.2f}, {tat_ca[i][1]:.2f}).")
     return {"diem": tat_ca, "buoc_x": sx, "buoc_y": sy, "dien_tich": dien_tich(dg_m), "canh_bao": canh_bao,
-            "dim": tinh_dim(dg_m, diem, them)}
+            "dim": tinh_dim(dg_m, nhom, tat_ca, them)}
 
 
 # ---------- Kích thước (dim) ----------
@@ -178,32 +243,39 @@ def _chuoi(toa_do, co_dinh, ngang):
     return [((co_dinh, a), (co_dinh, b)) for a, b in zip(toa_do, toa_do[1:])]
 
 
-def tinh_dim(dg, luoi, them):
+def _chuoi_qua(dg, tat_ca, co_dinh, nhom_toa_do, ngang):
+    """Chuỗi dim tường → thiết bị → ... → tường trên đường ngang y = co_dinh (hoặc dọc x = co_dinh).
+
+    Lấy mọi thiết bị của phòng nằm trên đường đó (kể cả của mảnh chữ nhật khác), giới hạn
+    trong đoạn tường bao quanh nhom_toa_do.
+    """
+    tuong = sorted(_giao_ngang(dg, co_dinh) if ngang else _giao_doc(dg, co_dinh))
+    dau, cuoi = min(nhom_toa_do), max(nhom_toa_do)
+    a = max((t for t in tuong if t < dau), default=None)
+    b = min((t for t in tuong if t > cuoi), default=None)
+    tren_duong = sorted({round(p[0] if ngang else p[1], 6) for p in tat_ca
+                         if abs((p[1] if ngang else p[0]) - co_dinh) < 1e-6
+                         and (a is None or p[0 if ngang else 1] > a) and (b is None or p[0 if ngang else 1] < b)})
+    return _chuoi([t for t in [a, *tren_duong, b] if t is not None], co_dinh, ngang)
+
+
+def tinh_dim(dg, nhom, tat_ca, them):
     """Các đoạn cần ghi kích thước (toạ độ mét), đủ để định vị mọi thiết bị:
 
-    - Lưới đều: một chuỗi ngang qua hàng nhiều thiết bị nhất và một chuỗi dọc qua cột nhiều
-      thiết bị nhất, mỗi chuỗi gồm tường → thiết bị → ... → thiết bị → tường.
+    - Mỗi lưới đối xứng (mỗi mảnh chữ nhật): một chuỗi ngang qua hàng gần tâm nhất và một
+      chuỗi dọc qua cột gần tâm nhất, đi từ tường → thiết bị → ... → thiết bị → tường.
     - Thiết bị bổ sung (không theo lưới): dim tới tường gần nhất theo cả hai phương.
     """
     doan = []
-    if luoi:
-        hang, cot = {}, {}
-        for x, y in luoi:
-            hang.setdefault(round(y, 6), []).append(x)
-            cot.setdefault(round(x, 6), []).append(y)
-        y0, xs = max(sorted(hang.items()), key=lambda kv: len(kv[1]))
-        xs = sorted(xs)
-        tuong = _giao_ngang(dg, y0)
-        trai = max((t for t in tuong if t < xs[0]), default=None)
-        phai = min((t for t in tuong if t > xs[-1]), default=None)
-        doan += _chuoi([t for t in [trai, *xs, phai] if t is not None], y0, ngang=True)
-
-        x0, ys = max(sorted(cot.items()), key=lambda kv: len(kv[1]))
-        ys = sorted(ys)
-        tuong = _giao_doc(dg, x0)
-        duoi = max((t for t in tuong if t < ys[0]), default=None)
-        tren = min((t for t in tuong if t > ys[-1]), default=None)
-        doan += _chuoi([t for t in [duoi, *ys, tren] if t is not None], x0, ngang=False)
+    for luoi in nhom:
+        if not luoi:
+            continue
+        cx = sum(p[0] for p in luoi) / len(luoi)
+        cy = sum(p[1] for p in luoi) / len(luoi)
+        y0 = min({p[1] for p in luoi}, key=lambda y: (abs(y - cy), y))
+        x0 = min({p[0] for p in luoi}, key=lambda x: (abs(x - cx), x))
+        doan += _chuoi_qua(dg, tat_ca, y0, [p[0] for p in luoi if p[1] == y0], ngang=True)
+        doan += _chuoi_qua(dg, tat_ca, x0, [p[1] for p in luoi if p[0] == x0], ngang=False)
 
     for x, y in them:
         tx = min(_giao_ngang(dg, y), key=lambda t: abs(t - x), default=None)
@@ -212,7 +284,12 @@ def tinh_dim(dg, luoi, them):
             doan.append(((tx, y), (x, y)))
         if ty is not None:
             doan.append(((x, ty), (x, y)))
-    return [(p1, p2) for p1, p2 in doan if math.dist(p1, p2) > 1e-6]
+    # Bỏ đoạn trùng (hai mảnh có thể sinh cùng một chuỗi)
+    duy_nhat = {}
+    for p1, p2 in doan:
+        if math.dist(p1, p2) > 1e-6:
+            duy_nhat.setdefault(tuple(round(v, 6) for v in (*p1, *p2)), (p1, p2))
+    return list(duy_nhat.values())
 
 
 # ---------- Vẽ ----------

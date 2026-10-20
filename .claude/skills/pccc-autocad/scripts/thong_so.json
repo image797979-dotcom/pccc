@@ -9,6 +9,8 @@
       "4.1": {"cuong_do_l_s_m2": 0.30, "dien_tich_tinh_toan_m2": 180, "thoi_gian_phut": 60, "dien_tich_max_moi_dau_m2": 12, "khoang_cach_max_m": 4.0}
     },
     "ty_le_cach_tuong_max": 0.5,
+    "cach_tuong_min_m": 0.5,
+    "_cach_tuong_min": "Quy ước của người dùng: đầu phun cách tường tối thiểu 500 mm; bố trí đối xứng đều trong phòng",
     "khoang_cach_min_m": 1.5
   },
   "bao_khoi": {
