@@ -38,9 +38,23 @@ git clone https://github.com/puran-water/autocad-mcp.git puran-autocad-mcp
 git clone https://github.com/puran-water/autocad-drafting.git
 ```
 
+## Skill `pccc-autocad` (trong repo này)
+
+Skill Claude nằm tại [.claude/skills/pccc-autocad](.claude/skills/pccc-autocad/SKILL.md). Mở Claude Code trong thư mục repo là skill tự được nạp.
+
+- Rải tự động sprinkler (TCVN 7336:2021), đầu báo khói và đầu báo nhiệt (TCVN 5738:2021) trong các polyline phòng trên layer `PCCC-PHONG`. Làm được trên file DXF (ezdxf) hoặc trực tiếp trong AutoCAD đang mở (COM).
+- Thống kê khối lượng từ nhiều file DXF/DWG ra Excel: đếm block, chiều dài ống/cáp theo layer, diện tích.
+- Quy ước layer/ký hiệu PCCC và bảng số liệu tiêu chuẩn tham khảo ([tieu-chuan.md](.claude/skills/pccc-autocad/references/tieu-chuan.md)).
+
+Cài thư viện: `pip install ezdxf openpyxl pywin32`
+
+> Số liệu tiêu chuẩn trong skill chỉ để tham khảo. Phải đối chiếu bản gốc hiện hành; sửa số tại `scripts/thong_so.json`.
+
 ## Hướng phát triển
 
-- Viết skill PCCC riêng (SKILL.md) theo TCVN/QCVN: quy tắc bố trí đầu phun, đầu báo, họng nước, quy ước layer và ký hiệu; ghép với một MCP server ở mục 1.
-- Viết LISP hoặc script Python (ezdxf) tự rải sprinkler trong polyline phòng theo mức nguy hiểm.
+- Bổ sung họng nước vách tường, bình chữa cháy, nút ấn, chuông đèn vào script rải.
+- Tách phòng chữ L/U thành các hình chữ nhật trước khi rải, để lưới đều hơn (hiện đang bổ sung điểm cho vùng góc).
+- Xét dầm, cột và vật cản khi bố trí; vẽ ống nhánh sprinkler tự động.
+- Ghép với một MCP server ở mục 1.
 
 > Các repo trên là của bên thứ ba. Đọc kỹ mã nguồn trước khi cài.

@@ -1,0 +1,36 @@
+{
+  "_ghi_chu": "Giá trị tham khảo, đơn vị mét và m2. Phải đối chiếu bản gốc TCVN/QCVN hiện hành trước khi dùng cho hồ sơ thiết kế; sửa ở đây là mọi script dùng theo. Xem references/tieu-chuan.md.",
+  "sprinkler": {
+    "_nguon": "TCVN 7336:2021 - bảng thông số hệ sprinkler nước theo nhóm nhà/phòng",
+    "nhom": {
+      "1":   {"cuong_do_l_s_m2": 0.08, "dien_tich_tinh_toan_m2": 60,  "thoi_gian_phut": 30, "dien_tich_max_moi_dau_m2": 12, "khoang_cach_max_m": 4.0},
+      "2":   {"cuong_do_l_s_m2": 0.12, "dien_tich_tinh_toan_m2": 120, "thoi_gian_phut": 60, "dien_tich_max_moi_dau_m2": 12, "khoang_cach_max_m": 4.0},
+      "3":   {"cuong_do_l_s_m2": 0.24, "dien_tich_tinh_toan_m2": 120, "thoi_gian_phut": 60, "dien_tich_max_moi_dau_m2": 12, "khoang_cach_max_m": 4.0},
+      "4.1": {"cuong_do_l_s_m2": 0.30, "dien_tich_tinh_toan_m2": 180, "thoi_gian_phut": 60, "dien_tich_max_moi_dau_m2": 12, "khoang_cach_max_m": 4.0}
+    },
+    "ty_le_cach_tuong_max": 0.5,
+    "khoang_cach_min_m": 1.5
+  },
+  "bao_khoi": {
+    "_nguon": "TCVN 5738:2021 - đầu báo khói điểm, theo chiều cao trần",
+    "theo_chieu_cao": [
+      {"tran_den_m": 3.5,  "dien_tich_max_m2": 85, "khoang_cach_max_m": 9.0, "cach_tuong_max_m": 4.5},
+      {"tran_den_m": 6.0,  "dien_tich_max_m2": 70, "khoang_cach_max_m": 8.5, "cach_tuong_max_m": 4.0},
+      {"tran_den_m": 10.0, "dien_tich_max_m2": 65, "khoang_cach_max_m": 8.0, "cach_tuong_max_m": 4.0},
+      {"tran_den_m": 12.0, "dien_tich_max_m2": 55, "khoang_cach_max_m": 7.5, "cach_tuong_max_m": 3.5}
+    ]
+  },
+  "bao_nhiet": {
+    "_nguon": "TCVN 5738:2021 - đầu báo nhiệt điểm, theo chiều cao trần",
+    "theo_chieu_cao": [
+      {"tran_den_m": 3.5, "dien_tich_max_m2": 25, "khoang_cach_max_m": 5.0, "cach_tuong_max_m": 2.5},
+      {"tran_den_m": 6.0, "dien_tich_max_m2": 20, "khoang_cach_max_m": 4.5, "cach_tuong_max_m": 2.0},
+      {"tran_den_m": 9.0, "dien_tich_max_m2": 15, "khoang_cach_max_m": 4.0, "cach_tuong_max_m": 2.0}
+    ]
+  },
+  "ky_hieu": {
+    "sprinkler":  {"layer": "PCCC-SPR",       "mau": 1, "block": "PCCC_SPR",  "ban_kinh_mm": 150, "chu": "S"},
+    "bao_khoi":   {"layer": "PCCC-BAO-KHOI",  "mau": 6, "block": "PCCC_DBK",  "ban_kinh_mm": 200, "chu": "K"},
+    "bao_nhiet":  {"layer": "PCCC-BAO-NHIET", "mau": 30, "block": "PCCC_DBN", "ban_kinh_mm": 200, "chu": "N"}
+  }
+}
