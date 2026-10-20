@@ -17,6 +17,7 @@ Skill này giúp kỹ sư PCCC làm nhanh các việc lặp lại trên bản v�
 | `scripts/rai_thiet_bi.py` | Rải sprinkler / đầu báo khói / đầu báo nhiệt trong các polyline phòng |
 | `scripts/thong_ke.py` | Thống kê block, chiều dài, diện tích từ nhiều DXF/DWG ra Excel |
 | `scripts/ky_hieu.py` | **Bộ ký hiệu thống nhất** (block, layer, kiểu chữ Arial) và bảng ký hiệu. Mọi thiết bị đều phải chèn qua module này |
+| `scripts/ong.py` | Đi ống sprinkler kiểu xương cá (trục đứng → ống chính → nhánh) và chọn DN sơ bộ theo số đầu phun phía sau |
 | `scripts/tim_phong.py` | Tự dựng polyline phòng từ nét tường, cột và cửa. Dùng khi bản vẽ nhập từ PDF hoặc chưa có polyline phòng |
 | `scripts/acad_com.py` | Tiện ích COM dùng chung (kết nối, thử lại khi AutoCAD bận, tạo layer/block) |
 
@@ -75,6 +76,12 @@ Nên chạy `--chi-tinh` trước để báo cho người dùng số lượng v�
 - Dim nằm trên layer `PCCC-DIM`, style `PCCC` (vạch chéo, chữ trên đường dim), cỡ chữ theo `--ty-le` (mặc định 1:100).
 
 Chỉ dùng `--khong-dim` khi người dùng nói rõ là không cần. Khi đặt thiết bị bằng cách khác (vẽ tay qua COM, AutoLISP, họng nước, bình chữa cháy…), cũng phải tự thêm dim theo cùng quy tắc trên. Script không xét dầm, cột, đèn, miệng gió hay vật cản. Hãy nói rõ điều này khi báo kết quả.
+
+### 3b. Đường ống
+- **Sprinkler:** trục đứng đặt cạnh thang chính. Ống chính chạy theo hàng đầu phun hành lang. Ống nhánh vuông góc tới từng cột đầu phun; các đầu cùng hoành độ dùng chung nhánh. Van khống chế kèm công tắc dòng chảy đặt ở chỗ rẽ từ trục đứng. Mỗi DN vẽ trên một layer riêng (`PCCC-ONG-SPR-D25`…) để thống kê.
+- **Họng nước:** trục đứng DN100 cạnh hộp, nhánh DN50 vào hộp. Tầng có phòng bơm thì thêm ống cấp DN100 từ trạm bơm tới chân trục.
+- DN ghi phía dưới hoặc bên phải ống, vì chữ dim nằm phía trên trùng tuyến ống. Ghi chú trục đứng đặt sau tường, ngoài hành lang. Trục đứng được dim tới trục lưới gần nhất.
+- **Luôn nói rõ** đường kính chỉ là chọn sơ bộ theo bảng ống nguy cơ thấp. TCVN 7336 yêu cầu tính thuỷ lực (áp lực và lưu lượng tại đầu bất lợi nhất, chọn bơm, bể) trước khi thi công.
 
 ### 4. Thống kê khối lượng
 ```bash

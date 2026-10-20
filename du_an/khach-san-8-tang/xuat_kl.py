@@ -54,6 +54,25 @@ ws.append(["TỔNG", "", f"=SUM(C2:C{r})", f"=SUM(D2:D{r})", "", ""])
 for o in ws[ws.max_row]:
     o.font = dam
 
+ws = wb.create_sheet("Ong")
+DN = ["DN25", "DN32", "DN40", "DN50", "DN65", "DN80", "DN100"]
+tieu_de(ws, ["Hệ", "Tầng"] + [f"{d} (m)" for d in DN] + ["Ghi chú"])
+for he, khoa_tk in [("Sprinkler", "ong_spr"), ("Họng nước", "ong_hong")]:
+    for ten, khoa in TANG_RIENG:
+        d = tk.get(khoa_tk, {}).get(khoa)
+        if d:
+            ws.append([he, ten] + [d.get(x, 0) for x in DN] + ["Ống ngang trên mặt bằng"])
+# Trục đứng: theo cao độ trên mặt cắt (tầng 1 ±0.000, tầng 8 +21.900, tum +25.000)
+ws.append(["Sprinkler", "Trục đứng T1 → tum"] + [0] * 6 + [25.0, "Ước tính theo mặt cắt 1-1"])
+ws.append(["Họng nước", "Trục đứng T1 → T8"] + [0] * 6 + [23.2, "Tới cao độ hộp họng tầng 8 (+21.900 + 1.250)"])
+r = ws.max_row
+ws.append(["TỔNG", ""] + [f"=SUM({c}2:{c}{r})" for c in "CDEFGHI"] + ["Chưa tính hao hụt, phụ kiện"])
+for o in ws[ws.max_row]:
+    o.font = dam
+ws.append([])
+ws.append(["Đường kính chọn sơ bộ theo số đầu phun phía sau đoạn ống (bảng ống nguy cơ thấp, nhóm 1). "
+           "Phải tính thuỷ lực theo TCVN 7336:2021 trước khi thi công."])
+
 for s in wb.worksheets:
     s.row_dimensions[1].height = 32
     for cot in s.columns:
