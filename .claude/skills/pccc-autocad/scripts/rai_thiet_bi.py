@@ -21,6 +21,8 @@ import sys
 from pathlib import Path
 
 THU_MUC = Path(__file__).resolve().parent
+LAYER_DIM = "PCCC-DIM"
+DIMSTYLE = "PCCC"
 
 
 # ---------- Thông số ----------
@@ -148,7 +150,69 @@ def tinh_phong(dg_m, tso):
                 if math.dist(tat_ca[i], tat_ca[j]) < tso["khoang_cach_min"] - 1e-6:
                     canh_bao.append(f"Hai thiết bị cách nhau < {tso['khoang_cach_min']} m tại "
                                     f"({tat_ca[i][0]:.2f}, {tat_ca[i][1]:.2f}).")
-    return {"diem": tat_ca, "buoc_x": sx, "buoc_y": sy, "dien_tich": dien_tich(dg_m), "canh_bao": canh_bao}
+    return {"diem": tat_ca, "buoc_x": sx, "buoc_y": sy, "dien_tich": dien_tich(dg_m), "canh_bao": canh_bao,
+            "dim": tinh_dim(dg_m, diem, them)}
+
+
+# ---------- Kích thước (dim) ----------
+
+def _giao_ngang(dg, y):
+    """Hoành độ các giao điểm của đường y = const với cạnh phòng."""
+    xs = []
+    for i in range(len(dg)):
+        (x1, y1), (x2, y2) = dg[i], dg[(i + 1) % len(dg)]
+        if (y1 > y) != (y2 > y):
+            xs.append(x1 + (y - y1) * (x2 - x1) / (y2 - y1))
+    return xs
+
+
+def _giao_doc(dg, x):
+    """Tung độ các giao điểm của đường x = const với cạnh phòng."""
+    return _giao_ngang([(b, a) for a, b in dg], x)
+
+
+def _chuoi(toa_do, co_dinh, ngang):
+    """Chuỗi dim nối tiếp qua các toạ độ đã sắp xếp; trả về [(p1, p2), ...]."""
+    if ngang:
+        return [((a, co_dinh), (b, co_dinh)) for a, b in zip(toa_do, toa_do[1:])]
+    return [((co_dinh, a), (co_dinh, b)) for a, b in zip(toa_do, toa_do[1:])]
+
+
+def tinh_dim(dg, luoi, them):
+    """Các đoạn cần ghi kích thước (toạ độ mét), đủ để định vị mọi thiết bị:
+
+    - Lưới đều: một chuỗi ngang qua hàng nhiều thiết bị nhất và một chuỗi dọc qua cột nhiều
+      thiết bị nhất, mỗi chuỗi gồm tường → thiết bị → ... → thiết bị → tường.
+    - Thiết bị bổ sung (không theo lưới): dim tới tường gần nhất theo cả hai phương.
+    """
+    doan = []
+    if luoi:
+        hang, cot = {}, {}
+        for x, y in luoi:
+            hang.setdefault(round(y, 6), []).append(x)
+            cot.setdefault(round(x, 6), []).append(y)
+        y0, xs = max(sorted(hang.items()), key=lambda kv: len(kv[1]))
+        xs = sorted(xs)
+        tuong = _giao_ngang(dg, y0)
+        trai = max((t for t in tuong if t < xs[0]), default=None)
+        phai = min((t for t in tuong if t > xs[-1]), default=None)
+        doan += _chuoi([t for t in [trai, *xs, phai] if t is not None], y0, ngang=True)
+
+        x0, ys = max(sorted(cot.items()), key=lambda kv: len(kv[1]))
+        ys = sorted(ys)
+        tuong = _giao_doc(dg, x0)
+        duoi = max((t for t in tuong if t < ys[0]), default=None)
+        tren = min((t for t in tuong if t > ys[-1]), default=None)
+        doan += _chuoi([t for t in [duoi, *ys, tren] if t is not None], x0, ngang=False)
+
+    for x, y in them:
+        tx = min(_giao_ngang(dg, y), key=lambda t: abs(t - x), default=None)
+        ty = min(_giao_doc(dg, x), key=lambda t: abs(t - y), default=None)
+        if tx is not None:
+            doan.append(((tx, y), (x, y)))
+        if ty is not None:
+            doan.append(((x, ty), (x, y)))
+    return [(p1, p2) for p1, p2 in doan if math.dist(p1, p2) > 1e-6]
 
 
 # ---------- Vẽ ----------
@@ -175,6 +239,20 @@ def chay_dxf(args, tso, kh, he_so):
         for kq in ket_qua:
             for x, y in kq["diem"]:
                 msp.add_blockref(kh["block"], (x * he_so, y * he_so), dxfattribs={"layer": kh["layer"]})
+        if not args.khong_dim:
+            if LAYER_DIM not in doc.layers:
+                doc.layers.add(LAYER_DIM, color=7)
+            if DIMSTYLE not in doc.dimstyles:
+                doc.dimstyles.new(DIMSTYLE, dxfattribs={
+                    "dimscale": args.ty_le / 1000 * he_so, "dimtxt": 2.5, "dimasz": 1.5,
+                    "dimexo": 1.0, "dimexe": 1.0, "dimgap": 0.8, "dimtad": 1,
+                    "dimdec": 0 if he_so == 1000 else 2, "dimblk": "ARCHTICK",
+                })
+            for kq in ket_qua:
+                for (x1, y1), (x2, y2) in kq["dim"]:
+                    p1, p2 = (x1 * he_so, y1 * he_so), (x2 * he_so, y2 * he_so)
+                    msp.add_linear_dim(base=p1, p1=p1, p2=p2, angle=0 if y1 == y2 else 90,
+                                       dimstyle=DIMSTYLE, dxfattribs={"layer": LAYER_DIM}).render()
         doc.saveas(args.ra or args.dxf.replace(".dxf", "_pccc.dxf"))
     return ket_qua
 
@@ -194,6 +272,15 @@ def chay_com(args, tso, kh, he_so):
             for x, y in kq["diem"]:
                 br = ac.goi_lai(lambda: ms.InsertBlock(ac.diem(x * he_so, y * he_so), kh["block"], 1, 1, 1, 0))
                 ac.goi_lai(lambda: setattr(br, "Layer", kh["layer"]))
+        if not args.khong_dim:
+            ac.dam_bao_layer(doc, LAYER_DIM, 7)
+            ac.dam_bao_dimstyle(doc, DIMSTYLE, args.ty_le / 1000 * he_so, 0 if he_so == 1000 else 2)
+            for kq in ket_qua:
+                for (x1, y1), (x2, y2) in kq["dim"]:
+                    p1, p2 = ac.diem(x1 * he_so, y1 * he_so), ac.diem(x2 * he_so, y2 * he_so)
+                    goc = 0.0 if y1 == y2 else math.pi / 2
+                    d = ac.goi_lai(lambda: ms.AddDimRotated(p1, p2, p1, goc))
+                    ac.goi_lai(lambda: setattr(d, "Layer", LAYER_DIM))
         ac.goi_lai(lambda: doc.Regen(1))
     return ket_qua
 
@@ -220,6 +307,8 @@ def main():
     ap.add_argument("--don-vi", choices=["mm", "m"], default="mm")
     ap.add_argument("--ra", help="File DXF đầu ra (mặc định <tên>_pccc.dxf)")
     ap.add_argument("--chi-tinh", action="store_true", help="Chỉ tính và in kết quả, không vẽ")
+    ap.add_argument("--ty-le", type=float, default=100, help="Tỷ lệ in để đặt cỡ chữ dim (mặc định 1:100)")
+    ap.add_argument("--khong-dim", action="store_true", help="Không ghi kích thước (mặc định luôn dim)")
     args = ap.parse_args()
 
     tso = doc_thong_so(args.loai, args.nhom, args.tran)
@@ -237,7 +326,7 @@ def main():
     for kq in ket_qua:
         tong += len(kq["diem"])
         print(f"- Phòng {kq['handle']}: {kq['dien_tich']:.1f} m², {len(kq['diem'])} thiết bị, "
-              f"bước {kq['buoc_x']:.2f} x {kq['buoc_y']:.2f} m")
+              f"bước {kq['buoc_x']:.2f} x {kq['buoc_y']:.2f} m, {len(kq['dim'])} kích thước")
         for cb in kq["canh_bao"]:
             print(f"    ! {cb}")
     print(f"Tổng: {len(ket_qua)} phòng, {tong} thiết bị.")

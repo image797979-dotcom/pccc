@@ -71,6 +71,27 @@ def dam_bao_block_tron(doc, ten, ban_kinh, chu=None):
     return blk
 
 
+def dam_bao_dimstyle(doc, ten, dimscale, dimdec=0):
+    """Tạo (hoặc cập nhật) dim style và đặt làm style hiện hành.
+
+    Cách làm qua COM: đặt biến DIM* cho bản vẽ, rồi CopyFrom(doc) để style nhận các giá trị đó.
+    Biến kiểu số nguyên của AutoCAD phải truyền dạng short (VT_I2), nếu không sẽ báo sai tham số.
+    """
+    i2 = lambda v: VARIANT(pythoncom.VT_I2, v)
+    r8 = lambda v: VARIANT(pythoncom.VT_R8, float(v))
+    for ten_bien, gia_tri in [
+        ("DIMSCALE", r8(dimscale)), ("DIMTXT", r8(2.5)), ("DIMASZ", r8(1.5)),
+        ("DIMEXO", r8(1.0)), ("DIMEXE", r8(1.0)), ("DIMGAP", r8(0.8)),
+        ("DIMTAD", i2(1)), ("DIMDEC", i2(dimdec)), ("DIMTIX", i2(0)),
+    ]:
+        goi_lai(lambda: doc.SetVariable(ten_bien, gia_tri))
+    goi_lai(lambda: doc.SetVariable("DIMBLK", "_ARCHTICK"))
+    ds = goi_lai(lambda: doc.DimStyles.Add(ten))
+    goi_lai(lambda: ds.CopyFrom(doc))
+    goi_lai(lambda: setattr(doc, "ActiveDimStyle", ds))
+    return ds
+
+
 def polyline_kin_tren_layer(doc, ten_layer):
     """Trả về [(handle, [(x, y), ...]), ...] cho mọi polyline kín trên layer (Model space)."""
     ms = goi_lai(lambda: doc.ModelSpace)

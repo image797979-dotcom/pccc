@@ -44,7 +44,14 @@ python <skill>/scripts/rai_thiet_bi.py --dxf mat_bang.dxf --loai bao_nhiet --tra
 ```
 Cách tính: chia lưới đều trong hình bao của phòng sao cho bước ≤ khoảng cách tối đa, khoảng cách tới tường ≤ giới hạn, và diện tích mỗi thiết bị ≤ giới hạn. Sau đó giữ lại các điểm nằm trong phòng, rồi bổ sung thiết bị cho các vùng góc chưa phủ (phòng chữ L, chữ U).
 
-Nên chạy `--chi-tinh` trước để báo cho người dùng số lượng và bước lưới, rồi mới vẽ thật. Script không xét dầm, cột, đèn, miệng gió hay vật cản. Hãy nói rõ điều này khi báo kết quả.
+Nên chạy `--chi-tinh` trước để báo cho người dùng số lượng và bước lưới, rồi mới vẽ thật.
+
+**Luôn ghi kích thước (dim) khoảng cách thiết bị.** Đây là quy ước bắt buộc của người dùng: bản vẽ PCCC nộp thẩm duyệt phải thể hiện được khoảng cách giữa các thiết bị và khoảng cách từ thiết bị tới tường để cán bộ thẩm duyệt kiểm tra với tiêu chuẩn. Script dim sẵn theo mặc định:
+- Lưới đều: một chuỗi dim ngang và một chuỗi dim dọc mỗi phòng, đi từ tường → thiết bị → … → tường.
+- Thiết bị bổ sung ở góc phòng: dim tới tường gần nhất theo cả hai phương.
+- Dim nằm trên layer `PCCC-DIM`, style `PCCC` (vạch chéo, chữ trên đường dim), cỡ chữ theo `--ty-le` (mặc định 1:100).
+
+Chỉ dùng `--khong-dim` khi người dùng nói rõ là không cần. Khi đặt thiết bị bằng cách khác (vẽ tay qua COM, AutoLISP, họng nước, bình chữa cháy…), cũng phải tự thêm dim theo cùng quy tắc trên. Script không xét dầm, cột, đèn, miệng gió hay vật cản. Hãy nói rõ điều này khi báo kết quả.
 
 ### 4. Thống kê khối lượng
 ```bash
@@ -60,7 +67,7 @@ Với việc khác ngoài thống kê (đổi tên layer, thay block khung tên,
 
 ### 6. Báo kết quả
 Trả lời bằng tiếng Việt, gồm:
-- Số thiết bị theo từng phòng và tổng số, bước lưới thực tế.
+- Số thiết bị theo từng phòng và tổng số, bước lưới thực tế, số kích thước đã ghi.
 - **Nguồn số liệu**: tên tiêu chuẩn, bảng hoặc dòng đã dùng (script in sẵn dòng "Thông số: …").
 - Các cảnh báo của script (vùng bổ sung, khoảng cách quá gần) và những gì script không xét (vật cản, dầm, trần nghiêng).
 - Một câu nhắc: số liệu cần đối chiếu bản gốc tiêu chuẩn hiện hành và để kỹ sư PCCC kiểm tra trước khi thẩm duyệt.
