@@ -402,6 +402,13 @@ for b in phong:
     truc = min(gx, key=lambda g: abs(g - rx))
     ve_dim([((truc / 1000, ry / 1000), (rx / 1000, ry / 1000))], dx, dy)  # định vị trục đứng theo trục lưới
     dai = ONG.gom_chieu_dai(doan, ONG.dn_spr)
+    # lưu mạng ống để tính thuỷ lực: đoạn (mm), trục đứng, diện tích bảo vệ của từng đầu
+    dt_dau = []
+    for p, pts in dau_theo_phong[b]:
+        for x, y in pts:
+            dt_dau.append([x, y, round(p["dien_tich"] / len(pts), 2), p["ten"]])
+    thong_ke.setdefault("mang_spr", {})[TEN_TANG[b]] = {
+        "truc": [rx, ry], "doan": [[list(p1), list(p2), n, loai] for p1, p2, n, loai in doan], "dau": dt_dau}
     # tầng 1: ống cấp từ trạm bơm tới chân trục đứng
     if b == "1" and phong_bom(b):
         px, py = phong_bom(b)

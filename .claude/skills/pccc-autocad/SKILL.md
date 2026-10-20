@@ -18,6 +18,7 @@ Skill này giúp kỹ sư PCCC làm nhanh các việc lặp lại trên bản v�
 | `scripts/thong_ke.py` | Thống kê block, chiều dài, diện tích từ nhiều DXF/DWG ra Excel |
 | `scripts/ky_hieu.py` | **Bộ ký hiệu thống nhất** (block, layer, kiểu chữ Arial) và bảng ký hiệu. Mọi thiết bị đều phải chèn qua module này |
 | `scripts/ong.py` | Đi ống sprinkler kiểu xương cá (trục đứng → ống chính → nhánh) và chọn DN sơ bộ theo số đầu phun phía sau |
+| `scripts/thuy_luc.py` | Tính thuỷ lực sơ bộ: vùng tính toán xa trục nhất, Hazen–Williams, cân bằng lưu lượng tại điểm rẽ; áp lực bơm; họng nước. Giả thiết nằm ở `thong_so.json` → `thuy_luc` |
 | `scripts/tim_phong.py` | Tự dựng polyline phòng từ nét tường, cột và cửa. Dùng khi bản vẽ nhập từ PDF hoặc chưa có polyline phòng |
 | `scripts/acad_com.py` | Tiện ích COM dùng chung (kết nối, thử lại khi AutoCAD bận, tạo layer/block) |
 
@@ -82,6 +83,13 @@ Chỉ dùng `--khong-dim` khi người dùng nói rõ là không cần. Khi đ�
 - **Họng nước:** trục đứng DN100 cạnh hộp, nhánh DN50 vào hộp. Tầng có phòng bơm thì thêm ống cấp DN100 từ trạm bơm tới chân trục.
 - DN ghi phía dưới hoặc bên phải ống, vì chữ dim nằm phía trên trùng tuyến ống. Ghi chú trục đứng đặt sau tường, ngoài hành lang. Trục đứng được dim tới trục lưới gần nhất.
 - **Luôn nói rõ** đường kính chỉ là chọn sơ bộ theo bảng ống nguy cơ thấp. TCVN 7336 yêu cầu tính thuỷ lực (áp lực và lưu lượng tại đầu bất lợi nhất, chọn bơm, bể) trước khi thi công.
+
+### 3c. Thuỷ lực sơ bộ, bơm và bể
+- Chạy `thuy_luc.tinh_tang_spr` cho **từng tầng** trên mạng ống đã vẽ, rồi `ap_luc_bom_spr` với cao độ sàn lấy từ mặt cắt. Tầng bất lợi là tầng cần áp lực bơm lớn nhất, thường là tầng trên cùng đủ diện tích tính toán.
+- Họng nước: `tinh_hong` cho hộp họng cao nhất.
+- Bơm chung cho cả hai hệ chạy đồng thời: Q = Q sprinkler + Q họng; H = lớn nhất của hai hệ × hệ số dự trữ. Kèm 1 bơm dự phòng và 1 bơm bù áp.
+- Bể: Q sprinkler × thời gian theo nhóm + Q họng × thời gian chữa cháy họng. Ghi rõ là chưa gồm nước chữa cháy ngoài nhà.
+- Trong báo cáo phải liệt kê **mọi giả thiết** (K đầu phun, áp tối thiểu, số cột nước, áp tại van họng, thời gian) và nhắc người dùng đối chiếu với TCVN 7336:2021 và QCVN 06:2022. Kết quả chỉ để chọn thiết bị ban đầu.
 
 ### 4. Thống kê khối lượng
 ```bash
