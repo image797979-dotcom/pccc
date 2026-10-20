@@ -16,6 +16,7 @@ Skill này giúp kỹ sư PCCC làm nhanh các việc lặp lại trên bản v�
 | `scripts/thong_so.json` | Bảng số liệu mà script dùng. Nếu người dùng sửa số theo bản gốc tiêu chuẩn thì sửa ở đây |
 | `scripts/rai_thiet_bi.py` | Rải sprinkler / đầu báo khói / đầu báo nhiệt trong các polyline phòng |
 | `scripts/thong_ke.py` | Thống kê block, chiều dài, diện tích từ nhiều DXF/DWG ra Excel |
+| `scripts/ky_hieu.py` | **Bộ ký hiệu thống nhất** (block, layer, kiểu chữ Arial) và bảng ký hiệu. Mọi thiết bị đều phải chèn qua module này |
 | `scripts/tim_phong.py` | Tự dựng polyline phòng từ nét tường, cột và cửa. Dùng khi bản vẽ nhập từ PDF hoặc chưa có polyline phòng |
 | `scripts/acad_com.py` | Tiện ích COM dùng chung (kết nối, thử lại khi AutoCAD bận, tạo layer/block) |
 
@@ -51,6 +52,13 @@ python <skill>/scripts/rai_thiet_bi.py --com --loai sprinkler --nhom 2
 python <skill>/scripts/rai_thiet_bi.py --dxf mat_bang.dxf --loai bao_khoi --tran 3.2 --ra mat_bang_bc.dxf
 python <skill>/scripts/rai_thiet_bi.py --dxf mat_bang.dxf --loai bao_nhiet --tran 4 --chi-tinh
 ```
+**Không bố trí đầu báo và sprinkler trong nhà vệ sinh và thang bộ** (quy ước của người dùng):
+- WC nhận theo tên phòng (WC, VỆ SINH, TẮM). Phòng nhỏ không tên thì nhận theo thiết bị vệ sinh vẽ bên trong (layer `*VAT$DUNG*`); ở các tầng phòng ngủ, coi mọi vùng nhỏ không tên dưới 4 m² là WC hoặc hốc tủ.
+- Thang bộ nhận theo dãy nét bậc thang (`tim_phong.vung_thang`). Cả buồng thang lẫn chiếu nghỉ được loại khỏi vùng bố trí, kể cả phần sảnh thang dính vào hành lang.
+- Liệt kê các phòng đã bỏ qua trong báo cáo để người dùng kiểm tra lại.
+
+**Ký hiệu thống nhất:** chỉ dùng block trong `ky_hieu.py`. Theo quy ước bản vẽ hiện trạng: "S" là đầu báo khói, "H" là đầu báo nhiệt; sprinkler là hình tròn có dấu chéo. Không tự tạo block riêng ở từng script. Mỗi tờ mặt bằng đặt một bảng ký hiệu bằng `ky_hieu.ve_bang`, chỉ gồm các thiết bị có trên tờ đó. Ký hiệu cũ của bản vẽ thì chuyển sang layer `PCCC-CU` và đóng băng, không xoá.
+
 **Nguyên tắc bố trí (quy ước của người dùng, áp dụng cả khi tự đặt thiết bị không qua script):**
 - **Đối xứng đều so với phòng:** các bước bằng nhau, hàng ngoài cùng cách tường đúng nửa bước, nên lưới đối xứng qua tâm phòng. Làm vậy bản vẽ gọn và dễ kiểm tra, và thi công đi ống thẳng hàng.
 - **Sprinkler cách tường tối thiểu 500 mm**, đồng thời không quá nửa khoảng cách tối đa giữa các đầu.

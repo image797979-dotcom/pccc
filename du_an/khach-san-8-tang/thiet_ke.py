@@ -15,6 +15,7 @@ from collections import defaultdict
 sys.path.insert(0, sys.argv[1])
 import ezdxf
 import ezdxf.bbox
+import ky_hieu as KH
 import rai_thiet_bi as rtb
 
 doc = ezdxf.readfile(sys.argv[2])
@@ -40,18 +41,44 @@ if rtb.DIMSTYLE not in doc.dimstyles:
         "dimscale": 100, "dimtxt": 2.5, "dimasz": 1.5, "dimexo": 1.0, "dimexe": 1.0, "dimgap": 0.8,
         "dimtad": 1, "dimdec": 0, "dimblk": "ARCHTICK"})
 
-ts = json.loads(open(rtb.THU_MUC / "thong_so.json", encoding="utf-8").read())
+KH.dam_bao_tat_ca(doc)  # một bộ ký hiệu thống nhất cho mọi tờ
+if "PCCC-CU" not in doc.layers:
+    doc.layers.add("PCCC-CU", color=8)
 
 
-def dam_bao_block(kh):
-    if kh["layer"] not in doc.layers:
-        doc.layers.add(kh["layer"], color=kh["mau"])
-    if kh["block"] not in doc.blocks:
-        b = doc.blocks.new(kh["block"])
-        r = kh["ban_kinh_mm"]
-        b.add_circle((0, 0), r)
-        b.add_text(kh["chu"], height=r * 0.7).set_placement(
-            (0, 0), align=ezdxf.enums.TextEntityAlignment.MIDDLE_CENTER)
+_thiet_bi_ve_sinh = {}
+
+
+def _tam_vat_dung(b):
+    """Tâm các nét đồ đạc / thiết bị vệ sinh (layer *VAT$DUNG*) trong block tầng."""
+    if b not in _thiet_bi_ve_sinh:
+        ds = []
+        for e in doc.blocks.get(b):
+            if "VAT$DUNG" in e.dxf.layer.upper() and e.dxftype() in ("LWPOLYLINE", "CIRCLE", "ARC", "ELLIPSE"):
+                try:
+                    bb = ezdxf.bbox.extents([e], fast=True)
+                except Exception:
+                    continue
+                if bb.has_data and max(bb.size.x, bb.size.y) < 900:
+                    ds.append((bb.center.x, bb.center.y))
+        _thiet_bi_ve_sinh[b] = ds
+    return _thiet_bi_ve_sinh[b]
+
+
+def la_wc(p, b):
+    """WC / phòng tắm: theo tên; hoặc phòng nhỏ không tên (< 5 m²) có vẽ thiết bị vệ sinh bên trong
+    (bồn cầu, lavabo). Phòng nhỏ không có thiết bị (hốc kỹ thuật, phòng máy phát...) vẫn bố trí."""
+    t = p["ten"].upper()
+    if "WC" in t or "VỆ SINH" in t or "TẮM" in t:
+        return True
+    if p["ten"] or p["dien_tich"] >= 5.0:
+        return False
+    if b not in ("1", "2", "tum") and p["dien_tich"] < 4.0:
+        return True  # tầng phòng ngủ: vùng nhỏ không tên là WC / hốc tủ của phòng
+    return sum(rtb.trong_da_giac(x, y, p["dg"]) for x, y in _tam_vat_dung(b)) >= 1
+
+
+bo_qua = defaultdict(list)  # phòng không bố trí thiết bị, để báo cáo
 
 
 def ve_dim(ds, dx, dy):
@@ -67,18 +94,19 @@ def ve_phong(dg, dx, dy):
 
 # ================= SPRINKLER (tờ 11–19) =================
 tso = rtb.doc_thong_so("sprinkler", "1")
-kh = ts["ky_hieu"]["sprinkler"]
-dam_bao_block(kh)
 thong_ke = {"sprinkler": {}}
 for b, ds in phong.items():
     dx, dy = NHOM[b]["sprinkler"]
     tong, canh_bao = 0, []
     for p in ds:
+        if la_wc(p, b):
+            bo_qua[TEN_TANG[b]].append(f"{p['ten'] or 'WC/hốc'} {p['dien_tich']} m²")
+            continue
         dg_m = [(x / 1000, y / 1000) for x, y in p["dg"]]
         kq = rtb.tinh_phong(dg_m, tso)
         ve_phong(p["dg"], dx, dy)
         for x, y in kq["diem"]:
-            msp.add_blockref(kh["block"], (x * 1000 + dx, y * 1000 + dy), dxfattribs={"layer": kh["layer"]})
+            KH.chen(msp, "sprinkler", (x * 1000 + dx, y * 1000 + dy))
         ve_dim(kq["dim"], dx, dy)
         tong += len(kq["diem"])
         canh_bao += [f"{p['ten'] or 'phòng ' + str(round(p['dien_tich'], 1)) + ' m²'}: {c}"
@@ -131,48 +159,8 @@ def len_tuong(b, x, y, huong=None, cach=150):
     return diem, p
 
 
-def dam_bao_ky_hieu(ten, layer, mau, ve):
-    if layer not in doc.layers:
-        doc.layers.add(layer, color=mau)
-    if ten not in doc.blocks:
-        ve(doc.blocks.new(ten))
-
-
-def chu(b, s, h):
-    b.add_text(s, height=h).set_placement((0, 0), align=ezdxf.enums.TextEntityAlignment.MIDDLE_CENTER)
-
-
-def hop(w, h, s):
-    def ve(b):
-        b.add_lwpolyline([(-w / 2, -h / 2), (w / 2, -h / 2), (w / 2, h / 2), (-w / 2, h / 2)], close=True)
-        chu(b, s, min(w, h) * 0.55)
-    return ve
-
-
-def tron(r, s):
-    def ve(b):
-        b.add_circle((0, 0), r)
-        chu(b, s, r * 0.8)
-    return ve
-
-
-KH = {
-    "nut_an":    ("PCCC_NA",   "PCCC-NUT-AN",     6, hop(350, 350, "NA")),
-    "chuong_den": ("PCCC_CD",  "PCCC-CHUONG-DEN", 6, tron(220, "CĐ")),
-    "tu_tt":     ("PCCC_TTBC", "PCCC-TU-BC",      6, hop(800, 400, "TTBC")),
-    "hong":      ("PCCC_HONG", "PCCC-HONG",       5, hop(750, 250, "H")),
-    "binh":      ("PCCC_BINH", "PCCC-BINH",       3, tron(170, "B")),
-}
-for ten, layer, mau, ve in KH.values():
-    dam_bao_ky_hieu(ten, layer, mau, ve)
-for ten, mau in [("PCCC-CAP-BC", 6), ("PCCC-CU", 8), ("PCCC-TEXT", 7)]:
-    if ten not in doc.layers:
-        doc.layers.add(ten, color=mau)
-
-
 def dat(loai, x, y, dx, dy):
-    ten, layer, _, _ = KH[loai]
-    msp.add_blockref(ten, (x + dx, y + dy), dxfattribs={"layer": layer})
+    KH.chen(msp, loai, (x + dx, y + dy))
 
 
 def dim_toi_tuong(b, pts, dx, dy):
@@ -180,10 +168,6 @@ def dim_toi_tuong(b, pts, dx, dy):
     for x, y in pts:
         dg_m = [(u / 1000, v / 1000) for u, v in phong_chua(b, x, y)["dg"]]
         ve_dim(rtb.tinh_dim(dg_m, [], [(x / 1000, y / 1000)], [(x / 1000, y / 1000)]), dx, dy)
-
-
-def la_wc(p):
-    return "WC" in p["ten"].upper() or "VỆ SINH" in p["ten"].upper() or (not p["ten"] and p["dien_tich"] < 2.5)
 
 
 # ================= BÁO CHÁY (tờ 6–9: block 1, 2, 3, tum) =================
@@ -201,6 +185,9 @@ for e in list(msp):
     if e.dxftype() in ("TEXT", "MTEXT") and l == "0":
         s = (e.plain_text() if e.dxftype() == "MTEXT" else e.dxf.text).upper()
         cu = "ZONE" in s or "KEÁT NOÁI" in s
+    elif l == "@ NETMANH":
+        # dim / nét ghi chú của thiết kế báo cháy cũ nằm chung layer với block mặt bằng
+        cu = e.dxftype() in ("DIMENSION", "LINE", "LWPOLYLINE", "LEADER")
     else:
         cu = l in LOP_CU
     if not cu:
@@ -230,14 +217,12 @@ for b in ["1", "2", "3", "tum"]:
             if "MÁY PHÁT" not in gan["ten"].upper():
                 gan["ten"] = (gan["ten"] + " / " if gan["ten"] else "") + s
     for p in phong[b]:
-        if la_wc(p):
+        if la_wc(p, b):
             continue
         loai = "bao_nhiet" if "MÁY PHÁT" in p["ten"].upper() else "bao_khoi"
         kq = rtb.tinh_phong([(x / 1000, y / 1000) for x, y in p["dg"]], rtb.doc_thong_so(loai, tran=3.3))
-        kh2 = ts["ky_hieu"][loai]
-        dam_bao_block(kh2)
         for x, y in kq["diem"]:
-            msp.add_blockref(kh2["block"], (x * 1000 + dx, y * 1000 + dy), dxfattribs={"layer": kh2["layer"]})
+            KH.chen(msp, loai, (x * 1000 + dx, y * 1000 + dy))
             dau_bao.append((x * 1000, y * 1000))
         ve_dim(kq["dim"], dx, dy)
         dem[loai] += len(kq["diem"])
@@ -249,7 +234,7 @@ for b in ["1", "2", "3", "tum"]:
         cy = sum(y for _, y in ktp["dg"]) / len(ktp["dg"])
         vi_tri = [len_tuong(b, cx, cy)[0]]
     else:
-        vi_tri = [len_tuong(b, gx[1] + 2000, gy[1] + 800, "tren" if b != "2" else "duoi")[0],
+        vi_tri = [len_tuong(b, gx[1] + 2000, gy[1] + 800, "duoi" if b in ("1", "2") else "tren")[0],
                   len_tuong(b, gx[-1] - 600, gy[1] + 800, "phai")[0]]
     for (x, y) in vi_tri:
         dat("nut_an", x - 300, y, dx, dy)
@@ -325,6 +310,23 @@ for b in phong:
     thong_ke["hong_binh"][TEN_TANG[b]] = dem
     print(f"[Họng/bình] {TEN_TANG[b]}: {dem}", flush=True)
 
+# ================= Bảng ký hiệu trên từng tờ (cùng block với thiết bị) =================
+khung = []
+for e in msp.query('LWPOLYLINE[layer=="Tpl_Bound"]'):
+    xs, ys = zip(*e.get_points("xy"))
+    khung.append((min(xs), min(ys), max(xs), max(ys)))
+khung.sort(key=lambda k: (-round(k[1] / 1000), k[0]))
+BANG = {
+    range(6, 10): (["bao_khoi", "bao_nhiet", "nut_an", "chuong_den", "tu_tt"], True),
+    range(11, 20): (["sprinkler"], False),
+    range(21, 30): (["hong", "binh"], False),
+}
+for to, (ds, cap) in BANG.items():
+    for so in to:
+        x0, y0, _, _ = khung[so - 1]
+        KH.ve_bang(msp, (x0 + 1500, y0 + 1500), ds, co_cap=cap)
+
+thong_ke["bo_qua"] = bo_qua
 json.dump(thong_ke, open(sys.argv[4] + ".json", "w", encoding="utf-8"), ensure_ascii=False, indent=1)
 doc.saveas(sys.argv[4])
 print("Đã lưu", sys.argv[4])

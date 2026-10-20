@@ -196,12 +196,14 @@ def tinh_phong(dg_m, tso):
         rong = [h for h in manh if min(h[2] - h[0], h[3] - h[1]) >= rong_min] or manh
         hep = [h for h in manh if h not in rong]
         luoi = [luoi_hcn(h, tso) for h in rong]
+        manh_dung = list(rong)  # hình chữ nhật tương ứng từng lưới (để dim trong phạm vi mảnh)
         r_phu = math.hypot(tso["khoang_cach_max"] / 2, tso["khoang_cach_max"] / 2)
         da_co = [p for d, _, _ in luoi for p in d]
         for h in hep:
             goc = [(h[0], h[1]), (h[2], h[1]), (h[2], h[3]), (h[0], h[3]), ((h[0] + h[2]) / 2, (h[1] + h[3]) / 2)]
             if any(min((math.dist(g, p) for p in da_co), default=math.inf) > r_phu for g in goc):
                 luoi.append(luoi_hcn(h, tso))
+                manh_dung.append(h)
                 da_co += luoi[-1][0]
         if len(rong) == len(manh) and min(min(h[2] - h[0], h[3] - h[1]) for h in manh) < rong_min \
                 and dien_tich(dg_m) <= tso["dien_tich_max"]:
@@ -213,6 +215,7 @@ def tinh_phong(dg_m, tso):
                 tot = max(mau, key=lambda m: khoang_cach_tuong(*m, dg_m))
                 if all(math.dist(m, tot) <= r_phu for m in mau):
                     luoi = [([tot], max(xs) - min(xs), max(ys) - min(ys))]
+                    manh_dung = [None]  # dim tới tường thật
         nhom = [d for d, _, _ in luoi]
         diem = [p for d in nhom for p in d]
         sx = max(s for _, s, _ in luoi)
@@ -225,6 +228,7 @@ def tinh_phong(dg_m, tso):
     else:
         diem, sx, sy = rai_luoi(dg_m, tso)
         nhom = [diem]
+        manh_dung = [None]
         them = bo_sung_vung_trong(dg_m, diem, sx, sy, tso["cach_tuong_min"])
         canh_bao.append("Phòng có tường xiên: lưới theo hình bao, không đối xứng hoàn toàn, nên kiểm tra lại bằng mắt."
                         + (f" Đã bổ sung {len(them)} thiết bị cho vùng chưa phủ." if them else ""))
@@ -240,7 +244,7 @@ def tinh_phong(dg_m, tso):
                     canh_bao.append(f"Hai thiết bị cách nhau < {tso['khoang_cach_min']} m tại "
                                     f"({tat_ca[i][0]:.2f}, {tat_ca[i][1]:.2f}).")
     return {"diem": tat_ca, "buoc_x": sx, "buoc_y": sy, "dien_tich": dien_tich(dg_m), "canh_bao": canh_bao,
-            "dim": tinh_dim(dg_m, nhom, tat_ca, them)}
+            "dim": tinh_dim(dg_m, nhom, tat_ca, them, manh_dung)}
 
 
 # ---------- Kích thước (dim) ----------
@@ -267,39 +271,47 @@ def _chuoi(toa_do, co_dinh, ngang):
     return [((co_dinh, a), (co_dinh, b)) for a, b in zip(toa_do, toa_do[1:])]
 
 
-def _chuoi_qua(dg, tat_ca, co_dinh, nhom_toa_do, ngang):
+def _chuoi_qua(dg, tat_ca, co_dinh, nhom_toa_do, ngang, gioi_han=None):
     """Chuỗi dim tường → thiết bị → ... → tường trên đường ngang y = co_dinh (hoặc dọc x = co_dinh).
 
-    Lấy mọi thiết bị của phòng nằm trên đường đó (kể cả của mảnh chữ nhật khác), giới hạn
-    trong đoạn tường bao quanh nhom_toa_do.
+    Lấy mọi thiết bị của phòng nằm trên đường đó, giới hạn trong đoạn tường bao quanh
+    nhom_toa_do. Nếu cho gioi_han (lo, hi) = mép mảnh chữ nhật, chuỗi không vượt quá mép mảnh,
+    để chuỗi dim của phòng chữ L/U không kéo dài xuyên qua mảnh khác.
     """
     tuong = sorted(_giao_ngang(dg, co_dinh) if ngang else _giao_doc(dg, co_dinh))
     dau, cuoi = min(nhom_toa_do), max(nhom_toa_do)
     a = max((t for t in tuong if t < dau), default=None)
     b = min((t for t in tuong if t > cuoi), default=None)
+    if gioi_han:
+        lo, hi = gioi_han
+        a = lo if a is None or a < lo - 1e-6 else a
+        b = hi if b is None or b > hi + 1e-6 else b
     tren_duong = sorted({round(p[0] if ngang else p[1], 6) for p in tat_ca
                          if abs((p[1] if ngang else p[0]) - co_dinh) < 1e-6
                          and (a is None or p[0 if ngang else 1] > a) and (b is None or p[0 if ngang else 1] < b)})
     return _chuoi([t for t in [a, *tren_duong, b] if t is not None], co_dinh, ngang)
 
 
-def tinh_dim(dg, nhom, tat_ca, them):
+def tinh_dim(dg, nhom, tat_ca, them, manh=None):
     """Các đoạn cần ghi kích thước (toạ độ mét), đủ để định vị mọi thiết bị:
 
     - Mỗi lưới đối xứng (mỗi mảnh chữ nhật): một chuỗi ngang qua hàng gần tâm nhất và một
-      chuỗi dọc qua cột gần tâm nhất, đi từ tường → thiết bị → ... → thiết bị → tường.
+      chuỗi dọc qua cột gần tâm nhất, đi từ tường (hoặc mép mảnh) → thiết bị → ... → tường.
     - Thiết bị bổ sung (không theo lưới): dim tới tường gần nhất theo cả hai phương.
     """
     doan = []
-    for luoi in nhom:
+    manh = manh or [None] * len(nhom)
+    for luoi, h in zip(nhom, manh):
         if not luoi:
             continue
         cx = sum(p[0] for p in luoi) / len(luoi)
         cy = sum(p[1] for p in luoi) / len(luoi)
         y0 = min({p[1] for p in luoi}, key=lambda y: (abs(y - cy), y))
         x0 = min({p[0] for p in luoi}, key=lambda x: (abs(x - cx), x))
-        doan += _chuoi_qua(dg, tat_ca, y0, [p[0] for p in luoi if p[1] == y0], ngang=True)
-        doan += _chuoi_qua(dg, tat_ca, x0, [p[1] for p in luoi if p[0] == x0], ngang=False)
+        doan += _chuoi_qua(dg, tat_ca, y0, [p[0] for p in luoi if p[1] == y0], ngang=True,
+                           gioi_han=(h[0], h[2]) if h else None)
+        doan += _chuoi_qua(dg, tat_ca, x0, [p[1] for p in luoi if p[0] == x0], ngang=False,
+                           gioi_han=(h[1], h[3]) if h else None)
 
     for x, y in them:
         tx = min(_giao_ngang(dg, y), key=lambda t: abs(t - x), default=None)

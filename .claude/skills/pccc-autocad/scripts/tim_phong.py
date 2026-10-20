@@ -255,6 +255,54 @@ def _don_bac(dg, nguong=O * 3):
     return kq
 
 
+def vung_thang(blk, mo_rong=1300, so_bac_min=5):
+    """Nhận diện thang bộ từ các nét bậc thang: ≥ so_bac_min đoạn thẳng song song, dài 0,6–1,8 m,
+    cách đều 0,2–0,4 m, thẳng hàng hai đầu. Mỗi vế thang được nới thêm `mo_rong` mm theo hướng
+    đi lên/xuống để gồm cả chiếu nghỉ. Trả về [(x0, y0, x1, y1), ...] (toạ độ block, mm)."""
+    ngang, doc = [], []
+    for e in blk:
+        if e.dxftype() == "LINE":
+            ds = [((e.dxf.start.x, e.dxf.start.y), (e.dxf.end.x, e.dxf.end.y))]
+        elif e.dxftype() == "LWPOLYLINE":
+            p = [tuple(v) for v in e.get_points("xy")]
+            ds = list(zip(p, p[1:] + ([p[0]] if e.closed else [])))
+        else:
+            continue
+        for (x1, y1), (x2, y2) in ds:
+            L = math.hypot(x2 - x1, y2 - y1)
+            if not 600 <= L <= 1800:
+                continue
+            if abs(y1 - y2) < 0.02 * L:
+                ngang.append(((y1 + y2) / 2, min(x1, x2), max(x1, x2)))
+            elif abs(x1 - x2) < 0.02 * L:
+                doc.append(((x1 + x2) / 2, min(y1, y2), max(y1, y2)))
+
+    def tim_ve(ds):
+        """ds: (toạ độ vuông góc, đầu, cuối). Gom các đoạn thẳng hàng hai đầu thành dãy cách đều."""
+        nhom = {}
+        for c, a, b in ds:
+            nhom.setdefault((round(a / 100), round(b / 100)), []).append(c)
+        ve = []
+        for (a, b), cs in nhom.items():
+            cs = sorted(set(round(c) for c in cs))
+            day = [cs[0]]
+            for c in cs[1:] + [None]:
+                if c is not None and 180 <= c - day[-1] <= 400:
+                    day.append(c)
+                    continue
+                if len(day) >= so_bac_min:
+                    ve.append((a * 100, b * 100, day[0], day[-1]))
+                day = [c] if c is not None else []
+        return ve
+
+    vung = []
+    for a, b, c0, c1 in tim_ve(ngang):   # bậc nằm ngang -> thang đi theo phương y
+        vung.append((a - 100, c0 - mo_rong, b + 100, c1 + mo_rong))
+    for a, b, c0, c1 in tim_ve(doc):     # bậc thẳng đứng -> thang đi theo phương x
+        vung.append((c0 - mo_rong, a - 100, c1 + mo_rong, b + 100))
+    return vung
+
+
 def _bao_theo_cot(dac, gian=150):
     """Khung chữ nhật bao các cột (khối đặc vuông cạnh 200–700 mm), nới ra `gian` mm.
 
@@ -278,7 +326,12 @@ def _bao_theo_cot(dac, gian=150):
 def tim_phong_trong_block(doc, ten_block, lop_tuong, lop_cua, dien_tich_min=0.8, bao_theo_cot=False):
     blk = doc.blocks.get(ten_block)
     doan, dac, cung, net_cua = _thu_hinh(blk, set(lop_tuong), set(lop_cua))
-    if bao_theo_cot:
+    if isinstance(bao_theo_cot, tuple):
+        # khung đóng biên cho trước (vd. theo trục ngoài cùng), (x0, y0, x1, y1)
+        x0, y0, x1, y1 = bao_theo_cot
+        g = [(x0, y0), (x1, y0), (x1, y1), (x0, y1)]
+        doan += list(zip(g, g[1:] + g[:1]))
+    elif bao_theo_cot:
         doan += _bao_theo_cot(dac)
     xs = [p[0] for s in doan for p in s] + [p[0] for d in dac for p in d]
     ys = [p[1] for s in doan for p in s] + [p[1] for d in dac for p in d]
@@ -286,6 +339,10 @@ def tim_phong_trong_block(doc, ten_block, lop_tuong, lop_cua, dien_tich_min=0.8,
     vc_tuong = _raster(doan, dac, bbox)
     vc = vc_tuong | _raster(_dong_lo_cua(vc_tuong, bbox, cung, net_cua), [], bbox)
     nhan, so = _gan_nhan(~vc)
+    thang = np.zeros(vc.shape, dtype=bool)
+    for x0, y0, x1, y1 in vung_thang(blk):
+        thang[max(0, int((y0 - bbox[1]) / O)):max(0, int((y1 - bbox[1]) / O) + 1),
+              max(0, int((x0 - bbox[0]) / O)):max(0, int((x1 - bbox[0]) / O) + 1)] = True
     bien = set(nhan[0, :]) | set(nhan[-1, :]) | set(nhan[:, 0]) | set(nhan[:, -1])
 
     chu = []
@@ -299,6 +356,9 @@ def tim_phong_trong_block(doc, ten_block, lop_tuong, lop_cua, dien_tich_min=0.8,
         if k in bien:
             continue
         m = nhan == k
+        if (m & thang).sum() > 0.5 * m.sum():
+            continue  # buồng thang bộ: không phải phòng để bố trí thiết bị
+        m &= ~thang  # cắt phần chiếu nghỉ / sảnh thang dính vào hành lang
         dt = m.sum() * O * O / 1e6
         if dt < dien_tich_min:
             continue
