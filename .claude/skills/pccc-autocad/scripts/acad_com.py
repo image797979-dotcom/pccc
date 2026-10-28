@@ -21,11 +21,14 @@ def mang_2d(cac_diem):
 
 
 def goi_lai(ham, so_lan=60):
-    """Gọi ham(); nếu AutoCAD báo bận thì chờ 1 giây rồi thử lại."""
+    """Gọi ham(); nếu AutoCAD báo bận thì chờ 1 giây rồi thử lại.
+
+    Khi AutoCAD đang bận (regen, zoom), win32com có thể báo AttributeError thay vì com_error
+    (không tra được tên phương thức), nên bắt cả hai."""
     for i in range(so_lan):
         try:
             return ham()
-        except pythoncom.com_error:
+        except (pythoncom.com_error, AttributeError):
             if i == so_lan - 1:
                 raise
             time.sleep(1)
@@ -80,13 +83,15 @@ def dam_bao_dimstyle(doc, ten, dimscale, dimdec=0):
     """
     i2 = lambda v: VARIANT(pythoncom.VT_I2, v)
     r8 = lambda v: VARIANT(pythoncom.VT_R8, float(v))
+    # Kiểu dim theo hồ sơ mẫu (trinh_bay.KIEU_DIM): chữ đỏ 4,2 mm, nét + gạch chéo xanh tím
     for ten_bien, gia_tri in [
-        ("DIMSCALE", r8(dimscale)), ("DIMTXT", r8(2.5)), ("DIMASZ", r8(1.5)),
-        ("DIMEXO", r8(1.0)), ("DIMEXE", r8(1.0)), ("DIMGAP", r8(0.8)),
-        ("DIMTAD", i2(1)), ("DIMDEC", i2(dimdec)), ("DIMTIX", i2(0)),
+        ("DIMSCALE", r8(dimscale)), ("DIMTXT", r8(4.2)), ("DIMASZ", r8(1.8)),
+        ("DIMEXO", r8(0.6)), ("DIMEXE", r8(1.2)), ("DIMGAP", r8(0.8)),
+        ("DIMTAD", i2(1)), ("DIMDEC", i2(dimdec)), ("DIMTIX", i2(1)), ("DIMTIH", i2(0)), ("DIMTOH", i2(0)),
+        ("DIMTMOVE", i2(2)), ("DIMCLRT", i2(1)), ("DIMCLRD", i2(173)), ("DIMCLRE", i2(173)),
     ]:
         goi_lai(lambda: doc.SetVariable(ten_bien, gia_tri))
-    goi_lai(lambda: doc.SetVariable("DIMBLK", "_ARCHTICK"))
+    goi_lai(lambda: doc.SetVariable("DIMBLK", "_OBLIQUE"))
     ds = goi_lai(lambda: doc.DimStyles.Add(ten))
     goi_lai(lambda: ds.CopyFrom(doc))
     goi_lai(lambda: setattr(doc, "ActiveDimStyle", ds))

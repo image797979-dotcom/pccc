@@ -244,6 +244,7 @@ def tinh_phong(dg_m, tso):
                     canh_bao.append(f"Hai thiết bị cách nhau < {tso['khoang_cach_min']} m tại "
                                     f"({tat_ca[i][0]:.2f}, {tat_ca[i][1]:.2f}).")
     return {"diem": tat_ca, "buoc_x": sx, "buoc_y": sy, "dien_tich": dien_tich(dg_m), "canh_bao": canh_bao,
+            "da_giac": dg_m,
             "dim": tinh_dim(dg_m, nhom, tat_ca, them, manh_dung)}
 
 
@@ -339,33 +340,31 @@ def chay_dxf(args, tso, kh, he_so):
         (e.dxf.handle, [(x, y) for x, y in e.get_points("xy")])
         for e in msp.query(f'LWPOLYLINE[layer=="{args.layer_phong}"]') if e.closed
     ]
-    if not args.chi_tinh:
-        if kh["layer"] not in doc.layers:
-            doc.layers.add(kh["layer"], color=kh["mau"])
-        if kh["block"] not in doc.blocks:
-            blk = doc.blocks.new(kh["block"])
-            r = kh["ban_kinh_mm"] / 1000 * he_so
-            blk.add_circle((0, 0), r)
-            blk.add_text(kh["chu"], height=r * 0.7).set_placement((0, 0), align=ezdxf.enums.TextEntityAlignment.MIDDLE_CENTER)
     ket_qua = xu_ly(phong, tso, he_so)
     if not args.chi_tinh:
+        import ky_hieu as KH
+        import trinh_bay as TB
+        KH.DON_VI_MM = he_so == 1000
+        TB.dam_bao(doc, args.ty_le)  # ký hiệu + dim style theo hồ sơ mẫu
         for kq in ket_qua:
             for x, y in kq["diem"]:
-                msp.add_blockref(kh["block"], (x * he_so, y * he_so), dxfattribs={"layer": kh["layer"]})
+                KH.chen(msp, args.loai, (x * he_so, y * he_so))
         if not args.khong_dim:
-            if LAYER_DIM not in doc.layers:
-                doc.layers.add(LAYER_DIM, color=7)
-            if DIMSTYLE not in doc.dimstyles:
-                doc.dimstyles.new(DIMSTYLE, dxfattribs={
-                    "dimscale": args.ty_le / 1000 * he_so, "dimtxt": 2.5, "dimasz": 1.5,
-                    "dimexo": 1.0, "dimexe": 1.0, "dimgap": 0.8, "dimtad": 1,
-                    "dimdec": 0 if he_so == 1000 else 2, "dimblk": "ARCHTICK",
-                })
             for kq in ket_qua:
-                for (x1, y1), (x2, y2) in kq["dim"]:
-                    p1, p2 = (x1 * he_so, y1 * he_so), (x2 * he_so, y2 * he_so)
-                    msp.add_linear_dim(base=p1, p1=p1, p2=p2, angle=0 if y1 == y2 else 90,
-                                       dimstyle=DIMSTYLE, dxfattribs={"layer": LAYER_DIM}).render()
+                if args.loai == "sprinkler":
+                    # chuỗi tường → đầu phun → … → tường (trên tờ tổng: thay bằng TB.dim_theo_truc)
+                    for (x1, y1), (x2, y2) in kq["dim"]:
+                        TB.dim(msp, (x1 * he_so, y1 * he_so), (x2 * he_so, y2 * he_so), ngang=y1 == y2)
+                else:
+                    # kiểu bản mẫu: 2 dim vuông góc tới tường gần + 1 dim chéo tới góc xa nhất
+                    dg = [(x * he_so, y * he_so) for x, y in kq["da_giac"]]
+                    gh = TB.DIM_GOC_MAX_M[args.loai]
+                    for _, (x, y), xa in TB.dim_bao_chay_phong(
+                            msp, dg, [(args.loai, (x * he_so, y * he_so)) for x, y in kq["diem"]], he_so):
+                        x, y = x / he_so, y / he_so
+                        if xa / he_so > gh + 1e-6:
+                            kq["canh_bao"].append(f"Đầu báo ({x:.2f}, {y:.2f}) cách góc xa nhất {xa / he_so:.2f} m "
+                                                  f"> {gh} m — kiểm tra vùng bảo vệ (dim chéo chỉ ghi tới góc ≤ {gh} m).")
         doc.saveas(args.ra or args.dxf.replace(".dxf", "_pccc.dxf"))
     return ket_qua
 

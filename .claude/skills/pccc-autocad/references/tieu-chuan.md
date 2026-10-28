@@ -21,6 +21,18 @@
 | TCVN 3890:2023 | Phương tiện PCCC cho nhà và công trình: trang bị, bố trí |
 | TCVN 2622:1995 | Một phần yêu cầu cấp nước chữa cháy, đã được QCVN 06 thay thế phần lớn. Chỉ dùng phần còn hiệu lực |
 
+**Văn bản hồ sơ mẫu đã duyệt (10/2026) viện dẫn**, xem `trinh-bay-ban-ve.md`. Khi viết thuyết minh và ghi chú, ưu tiên các văn bản mới này. Phải kiểm tra lại bản gốc trước khi đổi số liệu trong `thong_so.json`:
+
+| Văn bản | Dùng cho |
+| --- | --- |
+| QCVN 10:2025/BCA | Trang bị phương tiện PCCC: Phụ lục A (Bảng A.2, đối tượng trang bị báo cháy, không gian trần treo); Phụ lục H (Bảng H.5 lưu lượng/số họng, Bảng H.7 áp lực lăng) |
+| TCVN 7568-1:2025 | Báo cháy: bố trí đầu báo (mục 5.9.1.1.4, 5.9.1.1.6 dầm, 5.9.2.1.4), hình khoảng cách lớn nhất giữa các đầu báo |
+| TCVN 7568-14:2025 | Báo cháy: thiết kế, lắp đặt; Phụ lục C tính dung lượng ắc quy tủ trung tâm; khoảng cách tủ tới trần, sàn |
+| TCVN 7435-1:2004 | Bình chữa cháy xách tay: bảng bố trí và công suất bình theo mối nguy hiểm loại A |
+| TCVN 13456:2022 | Chiếu sáng sự cố và chỉ dẫn thoát nạn (mục 5.2.9) |
+| TCVN 4513:1998 | Cấp nước bên trong |
+| TCVN 7568-14:2025, QCVN 12:2014/BXD | Điện phục vụ PCCC |
+
 Nhóm nguy hiểm cháy của phòng (nhóm 1, 2, 3, 4.1, 4.2...) để chọn thông số sprinkler nằm trong **phụ lục của TCVN 7336:2021**. Ví dụ thường gặp (phải kiểm tra lại theo phụ lục):
 - Nhóm 1: văn phòng, khách sạn, bệnh viện, trường học, nhà ở (các phòng không chứa nhiều chất cháy).
 - Nhóm 2: gara/bãi đỗ xe, nhà hàng, kho hàng nhỏ, sản xuất chế biến gỗ/dệt nhẹ…

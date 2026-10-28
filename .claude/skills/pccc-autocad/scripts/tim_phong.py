@@ -133,6 +133,8 @@ def _raster(doan, dac, bbox):
         n = max(1, int(math.hypot(bx - ax, by - ay) / (O / 2)))
         for k in range(n + 1):
             j, i = o(ax + (bx - ax) * k / n, ay + (by - ay) * k / n)
+            if not (-1 <= j <= ny and -1 <= i <= nx):
+                continue  # ngoài lưới (vd. nét cửa ngoài khung tường): chỉ số âm sẽ tô nhầm cả dải
             vc[max(0, j - 1):j + 2, max(0, i - 1):i + 2] = True  # nét dày ~3 ô để không lọt khe
     for p in dac:
         xs, ys = zip(*p)

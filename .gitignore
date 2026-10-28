@@ -3,3 +3,15 @@ __pycache__/
 *.bak
 *.dwl
 *.dwl2
+*.tmp
+# khach-san-mbbt: bản vẽ khách hàng (xref), DXF trung gian, PDF, ảnh kiểm tra — chỉ commit script + JSON
+du_an/khach-san-mbbt/YERSIN/
+du_an/khach-san-mbbt/PDF/
+du_an/khach-san-mbbt/pdf_bc/
+du_an/khach-san-mbbt/*.dxf
+du_an/khach-san-mbbt/*.png
+du_an/khach-san-mbbt/*.WMF
+du_an/khach-san-mbbt/*.wmf
+du_an/khach-san-mbbt/*.xlsx
+du_an/khach-san-mbbt/log_*.txt
+du_an/khach-san-mbbt/kham_pha.txt

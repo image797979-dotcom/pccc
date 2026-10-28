@@ -15,6 +15,8 @@
   },
   "bao_khoi": {
     "_nguon": "TCVN 5738:2021 - đầu báo khói điểm, theo chiều cao trần",
+    "dim_goc_max_m": 7.2,
+    "_dim_goc": "Quy ước trình bày: dim chéo đầu báo tới góc phòng chỉ ghi khi ≤ 7,2 m (TCVN 7568-1:2025 Hình 2). Giá trị dùng trong code nằm ở trinh_bay.DIM_GOC_MAX_M",
     "theo_chieu_cao": [
       {"tran_den_m": 3.5,  "dien_tich_max_m2": 85, "khoang_cach_max_m": 9.0, "cach_tuong_max_m": 4.5},
       {"tran_den_m": 6.0,  "dien_tich_max_m2": 70, "khoang_cach_max_m": 8.5, "cach_tuong_max_m": 4.0},
@@ -24,6 +26,7 @@
   },
   "bao_nhiet": {
     "_nguon": "TCVN 5738:2021 - đầu báo nhiệt điểm, theo chiều cao trần",
+    "dim_goc_max_m": 5.1,
     "theo_chieu_cao": [
       {"tran_den_m": 3.5, "dien_tich_max_m2": 25, "khoang_cach_max_m": 5.0, "cach_tuong_max_m": 2.5},
       {"tran_den_m": 6.0, "dien_tich_max_m2": 20, "khoang_cach_max_m": 4.5, "cach_tuong_max_m": 2.0},
@@ -57,8 +60,9 @@
     "bom": {"he_so_du_tru_cot_ap": 1.1, "ap_bu_bom_bu_bar": 0.5}
   },
   "ky_hieu": {
-    "sprinkler":  {"layer": "PCCC-SPR",       "mau": 1, "block": "PCCC_SPR",  "ban_kinh_mm": 150, "chu": "S"},
-    "bao_khoi":   {"layer": "PCCC-BAO-KHOI",  "mau": 6, "block": "PCCC_DBK",  "ban_kinh_mm": 200, "chu": "K"},
-    "bao_nhiet":  {"layer": "PCCC-BAO-NHIET", "mau": 30, "block": "PCCC_DBN", "ban_kinh_mm": 200, "chu": "N"}
+    "_ghi_chu": "Chỉ dùng cho chế độ --com (block đơn giản). Chế độ DXF dùng bộ ký hiệu đầy đủ trong ky_hieu.py",
+    "sprinkler":  {"layer": "PCCC-SPR",       "mau": 1, "block": "PCCC_SPR",  "ban_kinh_mm": 175, "chu": null},
+    "bao_khoi":   {"layer": "PCCC-BAO-KHOI",  "mau": 1, "block": "PCCC_DBK",  "ban_kinh_mm": 170, "chu": "S"},
+    "bao_nhiet":  {"layer": "PCCC-BAO-NHIET", "mau": 3, "block": "PCCC_DBN",  "ban_kinh_mm": 170, "chu": "H"}
   }
 }
