@@ -15,7 +15,8 @@ import os
 import shutil
 import sys
 
-sys.path.insert(0, r"C:\Users\Administrator\Documents\pccc\.claude\skills\pccc-autocad\scripts")
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", ".claude", "skills",
+                                "pccc-autocad", "scripts"))
 import acad_com as ac
 import acad_msp
 import ky_hieu as kh

@@ -1,6 +1,7 @@
 """Mở bản sao bản vẽ trong AutoCAD, in thống kê xref / layer / block / layout / text để dò bản vẽ."""
 import os, sys, collections
-sys.path.insert(0, r"C:\Users\Administrator\Documents\pccc\.claude\skills\pccc-autocad\scripts")
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", ".claude", "skills",
+                                "pccc-autocad", "scripts"))
 import acad_com as ac
 F = os.path.abspath(sys.argv[1])
 acad = ac.ket_noi()

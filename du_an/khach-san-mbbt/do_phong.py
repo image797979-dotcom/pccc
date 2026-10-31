@@ -4,7 +4,8 @@
 Chỉ lấy phần nhà (x > -800); block dò 'D_<tầng>' chỉ gồm tường/cột/kính/khung/cửa/thang/chữ."""
 import json, sys, os, math
 import numpy as np
-sys.path.insert(0, r"C:\Users\Administrator\Documents\pccc\.claude\skills\pccc-autocad\scripts")
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", ".claude", "skills",
+                                "pccc-autocad", "scripts"))
 import ezdxf, matplotlib; matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import tim_phong as tp

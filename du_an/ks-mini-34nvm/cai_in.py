@@ -1,7 +1,9 @@
 """Thiết lập in A3 cho mọi layout của bản vẽ đang mở: DWG To PDF, ISO full bleed A3, cửa sổ = khung A3
 (0, 0)–(420, 297), tỷ lệ 1:1, acad.ctb (giữ màu)."""
 import sys
-sys.path.insert(0, r"C:\Users\Administrator\Documents\pccc\.claude\skills\pccc-autocad\scripts")
+import os
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", ".claude", "skills",
+                                "pccc-autocad", "scripts"))
 import acad_com as ac
 import pythoncom
 from win32com.client import VARIANT

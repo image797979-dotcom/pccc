@@ -1,6 +1,8 @@
 """Hoàn tất file báo cháy đang mở: thêm layout sơ đồ nguyên lý (lần chạy đầu lỗi ở bước này), lưu."""
 import sys
-sys.path.insert(0, r"C:\Users\Administrator\Documents\pccc\.claude\skills\pccc-autocad\scripts")
+import os
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", ".claude", "skills",
+                                "pccc-autocad", "scripts"))
 import acad_com as ac, layout_so_do
 acad = ac.ket_noi()
 doc = ac.goi_lai(lambda: acad.ActiveDocument)

@@ -1,6 +1,7 @@
 """Mở bản sao DWG trong AutoCAD, lưu bản DXF (R2018) để đọc bằng ezdxf."""
 import os, sys
-sys.path.insert(0, r"C:\Users\Administrator\Documents\pccc\.claude\skills\pccc-autocad\scripts")
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", ".claude", "skills",
+                                "pccc-autocad", "scripts"))
 import acad_com as ac
 acad = ac.ket_noi()
 for src, dst in zip(sys.argv[1::2], sys.argv[2::2]):

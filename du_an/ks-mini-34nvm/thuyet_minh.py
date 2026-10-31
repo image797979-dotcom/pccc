@@ -7,7 +7,9 @@ Mỗi hàm vẽ một tờ A3 vào khung đã có ở góc G (model, tỷ lệ T
 import math
 import sys
 
-sys.path.insert(0, r"C:\Users\Administrator\Documents\pccc\.claude\skills\pccc-autocad\scripts")
+import os
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", ".claude", "skills",
+                                "pccc-autocad", "scripts"))
 import ky_hieu as kh
 import trinh_bay as tb
 

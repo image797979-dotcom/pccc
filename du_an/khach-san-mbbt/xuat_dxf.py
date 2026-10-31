@@ -1,6 +1,7 @@
 """Lưu bản sao DXF (R2018) của MBBT_PCCC.dwg để đọc bằng ezdxf, rồi trả bản vẽ đang mở về file DWG."""
 import os, sys
-sys.path.insert(0, r"C:\Users\Administrator\Documents\pccc\.claude\skills\pccc-autocad\scripts")
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", ".claude", "skills",
+                                "pccc-autocad", "scripts"))
 import acad_com as ac
 acad = ac.ket_noi()
 doc = ac.goi_lai(lambda: acad.ActiveDocument)

@@ -1,6 +1,7 @@
 """In mọi layout của 4 file PCCC (đang mở trong AutoCAD) ra PDF: PDF/<tên file>/<layout>.pdf"""
 import os, sys
-sys.path.insert(0, r"C:\Users\Administrator\Documents\pccc\.claude\skills\pccc-autocad\scripts")
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", ".claude", "skills",
+                                "pccc-autocad", "scripts"))
 import acad_com as ac
 acad = ac.ket_noi()
 ac.goi_lai(lambda: acad.ActiveDocument.SetVariable("BACKGROUNDPLOT", 0))

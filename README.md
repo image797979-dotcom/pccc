@@ -46,7 +46,7 @@ Skill Claude nằm tại [.claude/skills/pccc-autocad](.claude/skills/pccc-autoc
 - Thống kê khối lượng từ nhiều file DXF/DWG ra Excel: đếm block, chiều dài ống/cáp theo layer, diện tích.
 - Quy ước layer/ký hiệu PCCC và bảng số liệu tiêu chuẩn tham khảo ([tieu-chuan.md](.claude/skills/pccc-autocad/references/tieu-chuan.md)).
 
-Cài thư viện: `pip install ezdxf openpyxl pywin32`
+Cài thư viện: `pip install -r requirements.txt`. Quy ước làm việc và danh sách dự án: [CLAUDE.md](CLAUDE.md).
 
 > Số liệu tiêu chuẩn trong skill chỉ để tham khảo. Phải đối chiếu bản gốc hiện hành; sửa số tại `scripts/thong_so.json`.
 

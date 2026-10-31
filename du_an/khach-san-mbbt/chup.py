@@ -1,7 +1,8 @@
 """Xuất ảnh vùng một tầng của bản vẽ đang mở (WMF qua COM Export → PNG) để kiểm tra.
   python chup.py T3 ra.png [x0 y0 x1 y1 (toạ độ tầng)]"""
 import os, sys, time
-sys.path.insert(0, r"C:\Users\Administrator\Documents\pccc\.claude\skills\pccc-autocad\scripts")
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", ".claude", "skills",
+                                "pccc-autocad", "scripts"))
 import acad_com as ac
 from win32com.client import VARIANT
 import pythoncom

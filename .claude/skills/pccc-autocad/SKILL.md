@@ -60,6 +60,7 @@ Nếu chưa có polyline phòng (thường gặp với bản vẽ nhập từ PD
   - Mặt ngoài nhà để trống: dùng `bao_theo_cot=True` để đóng biên theo hàng cột.
   - Sân mái bị nhận là phòng: loại vùng lớn không có tên.
   - Tên phòng nằm ngoài polygon: gán cho phòng gần nhất.
+- Nếu dò tự động hỏng (vách ngăn vẽ không liền nét, rèm cửa nằm chung layer cửa, như dự án 34 NVM), khai báo phòng bằng tay: mỗi phòng là hợp các hình chữ nhật trừ WC, thang, rồi bắt dính mép vào mặt tường thật (xem `du_an/ks-mini-34nvm/phong_tay.py`). Đọc toạ độ từ ảnh tường có lưới 500 mm.
 - Nếu mặt bằng nằm trong block (mỗi tầng một block, chèn nhiều lần cho nhiều bộ tờ), dò một lần trong toạ độ block rồi cộng thêm điểm chèn của từng lần chèn.
 
 ### 3. Rải thiết bị
@@ -99,6 +100,7 @@ Chỉ dùng `--khong-dim` khi người dùng nói rõ là không cần. Khi đ�
 ### 3b. Đường ống
 - **Sprinkler:** trục đứng đặt cạnh thang chính. Ống chính chạy theo hàng đầu phun hành lang. Ống nhánh vuông góc tới từng cột đầu phun; các đầu cùng hoành độ dùng chung nhánh. Van khống chế kèm công tắc dòng chảy đặt ở chỗ rẽ từ trục đứng. Mỗi DN vẽ trên một layer riêng (`PCCC-ONG-SPR-D25`…) để thống kê.
 - **Họng nước:** trục đứng DN100 cạnh hộp, nhánh DN50 vào hộp. Tầng có phòng bơm thì thêm ống cấp DN100 từ trạm bơm tới chân trục.
+- **Vị trí hộp họng (quy ước của người dùng):** đặt ở lối đi chung, dễ tiếp cận: gắn lên tường lõi chung (tường thang máy, tường buồng thang), quay mặt ra sảnh hoặc hành lang. Không đặt trong phòng, sát cửa phòng hay trong tầm mở cánh cửa. Giữ cùng toạ độ ở mọi tầng để trục đứng thẳng. Xem ảnh kiểm tra để chắc hộp không nằm trong cung mở cửa.
 - DN ghi phía dưới hoặc bên phải ống, vì chữ dim nằm phía trên trùng tuyến ống. Ghi chú trục đứng đặt sau tường, ngoài hành lang. Trục đứng được dim tới trục lưới gần nhất.
 - **Luôn nói rõ** đường kính chỉ là chọn sơ bộ theo bảng ống nguy cơ thấp. TCVN 7336 yêu cầu tính thuỷ lực (áp lực và lưu lượng tại đầu bất lợi nhất, chọn bơm, bể) trước khi thi công.
 

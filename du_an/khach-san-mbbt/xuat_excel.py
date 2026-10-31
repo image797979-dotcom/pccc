@@ -5,7 +5,9 @@
 import json
 import sys
 
-sys.path.insert(0, r"C:\Users\Administrator\Documents\pccc\.claude\skills\pccc-autocad\scripts")
+import os
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", ".claude", "skills",
+                                "pccc-autocad", "scripts"))
 from openpyxl import Workbook
 from openpyxl.styles import Alignment, Font, PatternFill
 

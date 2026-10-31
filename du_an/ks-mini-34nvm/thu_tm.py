@@ -1,6 +1,8 @@
 """Thử các tờ thuyết minh bằng ezdxf (không cần AutoCAD), xuất PNG để soát bố cục."""
 import json, sys
-sys.path.insert(0, r"C:\Users\Administrator\Documents\pccc\.claude\skills\pccc-autocad\scripts")
+import os
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", ".claude", "skills",
+                                "pccc-autocad", "scripts"))
 import ezdxf
 from ezdxf.addons.drawing import matplotlib as dm
 import ky_hieu as kh, trinh_bay as tb

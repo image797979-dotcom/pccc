@@ -1,6 +1,7 @@
 """Mở bản sao MBBT_PCCC.dwg trong AutoCAD và in thống kê layer / block / layout để dò bản vẽ."""
 import os, sys, collections
-sys.path.insert(0, r"C:\Users\Administrator\Documents\pccc\.claude\skills\pccc-autocad\scripts")
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", ".claude", "skills",
+                                "pccc-autocad", "scripts"))
 import acad_com as ac
 F = os.path.abspath("MBBT_PCCC.dwg")
 acad = ac.ket_noi()

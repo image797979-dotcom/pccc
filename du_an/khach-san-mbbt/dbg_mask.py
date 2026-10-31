@@ -1,5 +1,7 @@
 import sys
-sys.path.insert(0, r"C:\Users\Administrator\Documents\pccc\.claude\skills\pccc-autocad\scripts")
+import os
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", ".claude", "skills",
+                                "pccc-autocad", "scripts"))
 import ezdxf, numpy as np, matplotlib; matplotlib.use("Agg"); import matplotlib.pyplot as plt
 import tim_phong as tp
 TUONG = ["WALL", "WALL-PARTITION", "WALL-RENOVATION", "COLUMS", "GLASS", "STEEL - FRAME", "FUR-CUT"]

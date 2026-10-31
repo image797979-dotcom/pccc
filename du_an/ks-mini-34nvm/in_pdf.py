@@ -1,7 +1,8 @@
 """In các layout của bản vẽ đang mở ra PDF (DWG To PDF.pc3), mỗi layout một file.
   python in_pdf.py thu_muc_ra [tên layout ...]   (bỏ trống = tất cả)"""
 import os, sys, time
-sys.path.insert(0, r"C:\Users\Administrator\Documents\pccc\.claude\skills\pccc-autocad\scripts")
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", ".claude", "skills",
+                                "pccc-autocad", "scripts"))
 import acad_com as ac
 ra = os.path.abspath(sys.argv[1]); os.makedirs(ra, exist_ok=True)
 chon = sys.argv[2:]
