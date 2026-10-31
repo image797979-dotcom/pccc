@@ -1,5 +1,7 @@
 """Mở file Excel bằng Excel (COM, ẩn), tính lại toàn bộ, kiểm tra ô lỗi (#...), lưu giá trị tính sẵn.
-  python tinh_lai_excel.py file.xlsx"""
+  python tinh_lai_excel.py file.xlsx [thư mục chép tới ...]
+Ví dụ (chép thêm vào thư mục dự án gốc, cạnh 4.MBBT.dwg):
+  python tinh_lai_excel.py BOQ_PCCC_YERSIN.xlsx "D:/dự án/khách sạn/YERSIN" """
 import os, sys, time
 import pythoncom, win32com.client
 
@@ -40,3 +42,8 @@ try:
     thu(lambda: wb.Close(False))
 finally:
     thu(lambda: xl.Quit())
+import shutil
+for d in sys.argv[2:]:
+    if os.path.isdir(d):
+        shutil.copy2(f, d)
+        print("đã chép tới", os.path.join(d, os.path.basename(f)))
