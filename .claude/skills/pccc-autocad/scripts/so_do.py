@@ -76,7 +76,7 @@ class _Ve:
 
 # ============================== BÁO CHÁY ==============================
 
-def bao_chay(msp, G, zones, ty_le=125, so_zone_tu=12, ten_tu="12 ZONES"):
+def bao_chay(msp, G, zones, ty_le=125, so_zone_tu=12, ten_tu="12 ZONES", tang_dat_tu="TẦNG 1"):
     """zones: [(tên zone, {loai: số lượng})] từ tầng thấp lên cao (loai: bao_khoi, bao_nhiet,
     nut_an, chuong_den, den_fire, den_phong). Trả về kết quả tính ắc quy."""
     v = _Ve(msp, G, ty_le)
@@ -114,7 +114,7 @@ def bao_chay(msp, G, zones, ty_le=125, so_zone_tu=12, ten_tu="12 ZONES"):
     v.net([(fx1, fy0 - 1.2), (fx1 + 1.2, fy0 - 1.2), (fx1 + 1.2, fy1 - 1.2)], mau=kh.DO)
     for i, (s, co, m) in enumerate([(ten_tu, 2.4, kh.XANH_LA), ("FACP", 2.4, kh.XANH_LA),
                                     ("FIRE ALARM", 2.2, kh.DO), ("CONTROL PANEL", 2.2, kh.DO),
-                                    ("TRUNG TÂM BÁO CHÁY", 1.9, 8), ("(ĐẶT TẠI TẦNG 1 PHÒNG", 1.9, 8),
+                                    ("TRUNG TÂM BÁO CHÁY", 1.9, 8), (f"(ĐẶT TẠI {tang_dat_tu} PHÒNG", 1.9, 8),
                                     ("AN NINH CÓ NGƯỜI", 1.9, 8), ("THƯỜNG TRỰC 24/24)", 1.9, 8)]):
         v.chu(s, (fx0 + fx1) / 2, fy1 - 7 - i * 7.5, co, "MIDDLE_CENTER", mau=m)
     v.hcn(56, 18, 78, 32)
@@ -183,7 +183,7 @@ def bao_chay(msp, G, zones, ty_le=125, so_zone_tu=12, ten_tu="12 ZONES"):
 
 # ============================== CHỮA CHÁY ==============================
 
-def chua_chay(msp, G, tang, bom, ty_le=125, the_tich_be=24, dn_truc=80, dn_hong=50):
+def chua_chay(msp, G, tang, bom, ty_le=125, the_tich_be=24, dn_truc=80, dn_hong=50, phong_bom="PHÒNG BƠM TẦNG 1"):
     """tang: [(tên, cao độ m, số đầu phun, có họng)] từ dưới lên. bom: [(loại, ký hiệu, Q l/s, H m)]."""
     v = _Ve(msp, G, ty_le)
     xr = 230                      # trục đứng
@@ -220,7 +220,9 @@ def chua_chay(msp, G, tang, bom, ty_le=125, the_tich_be=24, dn_truc=80, dn_hong=
             v.chu("+1.250", xr - 16, yh - 3, 1.6, "MIDDLE_CENTER", mau=8)
             v.chu(f"STK DN{dn_hong}", xr - 8, yh + 2, 1.4, "MIDDLE_CENTER", mau=kh.TIM)
     # đầu phun bất lợi + đồng hồ áp tầng trên cùng
-    v.ky("sd_dong_ho", 322, y0 + (n - 1) * buoc + buoc * 0.62)
+    co_spr = any(t_[2] for t_ in tang)  # không có sprinkler: bỏ nhánh, đồng hồ đầu bất lợi, ký hiệu đầu phun
+    if co_spr:
+        v.ky("sd_dong_ho", 322, y0 + (n - 1) * buoc + buoc * 0.62)
     # --- trạm bơm ---
     yd = y0 - 12                  # cao độ ống góp đẩy nối vào chân trục đứng
     v.hcn(128, 22, 166, 40, mau=kh.XANH_NHAT)
@@ -246,7 +248,7 @@ def chua_chay(msp, G, tang, bom, ty_le=125, the_tich_be=24, dn_truc=80, dn_hong=
     v.ky("sd_dong_ho", x_gop + 11, yd)
     v.ky("sd_van_an_toan", x_gop + 16, yd)
     v.chu(f"DN{dn_truc}", x_gop + 1, yd - 2, 1.5, mau=kh.TIM)
-    v.chu("PHÒNG BƠM TẦNG 1", 128, 52, 1.9)
+    v.chu(phong_bom, 128, 52, 1.9)
     v.net([(xr, yd), (xr, 45)], mau=kh.DO)
     # họng tiếp nước / lấy nước ngoài nhà
     v.net([(xr, yd), (300, yd), (300, 40)], mau=kh.DO)
@@ -263,8 +265,9 @@ def chua_chay(msp, G, tang, bom, ty_le=125, the_tich_be=24, dn_truc=80, dn_hong=
     v.chu("TÍN HIỆU BÁO CHÁY VỀ PHÒNG BƠM - CÁP CHỐNG CHÁY", 265, 15, 1.5, "MIDDLE_CENTER")
     # --- ký hiệu + bảng bơm ---
     kh.ve_bang(msp, v.p(12, 118), ["sd_van", "sd_van_1c", "sd_y_loc", "sd_khop_mem", "sd_dong_ho", "sd_cong_tac_ap",
-                                   "sd_van_an_toan", "sd_bom", "sd_van_phao", "sd_cong_tac_dong", "sd_van_xa_khi",
-                                   "sd_dau_phun", "sd_tu_hong", "hong_tiep"],
+                                   "sd_van_an_toan", "sd_bom", "sd_van_phao"] +
+               (["sd_cong_tac_dong", "sd_van_xa_khi", "sd_dau_phun"] if co_spr else ["sd_van_xa_khi"]) +
+               ["sd_tu_hong", "hong_tiep"],
                tieu_de="KÝ HIỆU :", ty_le=ty_le, rong_mm=82)
     tb.bang(msp, v.p(12, 285), [10, 34, 18, 24, 22],
             [["STT", "LOẠI BƠM", "KÝ HIỆU", "LƯU LƯỢNG", "CỘT ÁP\n(mH2O)"]] +
