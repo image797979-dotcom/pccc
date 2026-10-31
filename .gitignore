@@ -15,3 +15,15 @@ du_an/khach-san-mbbt/*.wmf
 du_an/khach-san-mbbt/*.xlsx
 du_an/khach-san-mbbt/log_*.txt
 du_an/khach-san-mbbt/kham_pha.txt
+# ks-mini-34nvm: bản vẽ khách hàng, DXF trung gian (tạo lại được), PDF, ảnh kiểm tra, trang hồ sơ mẫu — chỉ commit script + JSON
+du_an/ks-mini-34nvm/NVM/
+du_an/ks-mini-34nvm/PCCC/
+du_an/ks-mini-34nvm/PDF/
+du_an/ks-mini-34nvm/thu/
+du_an/ks-mini-34nvm/mau/
+du_an/ks-mini-34nvm/*.dxf
+du_an/ks-mini-34nvm/*.png
+du_an/ks-mini-34nvm/log_*.txt
+du_an/ks-mini-34nvm/kp_mbbt.txt
+du_an/ks-mini-34nvm/doc_tang.txt
+du_an/ks-mini-34nvm/dt.txt
