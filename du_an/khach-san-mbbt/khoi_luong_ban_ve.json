@@ -1,0 +1,375 @@
+{
+ "bc": {
+  "block": {
+   "SAN_THUONG": {
+    "PCCC_CD": 1,
+    "PCCC_NA": 1,
+    "PCCC_DBK": 2
+   },
+   "T7": {
+    "PCCC_CD": 2,
+    "PCCC_NA": 2,
+    "PCCC_DBK": 12
+   },
+   "T6": {
+    "PCCC_CD": 2,
+    "PCCC_NA": 2,
+    "PCCC_DBK": 15
+   },
+   "T5": {
+    "PCCC_CD": 2,
+    "PCCC_NA": 2,
+    "PCCC_DBK": 15
+   },
+   "T4": {
+    "PCCC_CD": 2,
+    "PCCC_NA": 2,
+    "PCCC_DBK": 15
+   },
+   "T3": {
+    "PCCC_CD": 2,
+    "PCCC_NA": 2,
+    "PCCC_DBK": 15
+   },
+   "T2": {
+    "PCCC_CD": 2,
+    "PCCC_NA": 2,
+    "PCCC_DBK": 15
+   },
+   "LUNG": {
+    "PCCC_CD": 2,
+    "PCCC_NA": 2,
+    "PCCC_DBK": 14
+   },
+   "TRET": {
+    "PCCC_FIRE": 1,
+    "PCCC_FACP": 1,
+    "PCCC_CD": 2,
+    "PCCC_NA": 2,
+    "PCCC_DBN": 1,
+    "PCCC_DBK": 10
+   },
+   "HAM": {
+    "PCCC_CD": 1,
+    "PCCC_NA": 1,
+    "PCCC_DBK": 7
+   }
+  },
+  "dai_mm": {
+   "SAN_THUONG": {
+    "PCCC-CAP-BC": 2230.0
+   },
+   "T7": {
+    "PCCC-CAP-BC": 51333.33333333333
+   },
+   "T6": {
+    "PCCC-CAP-BC": 59630.0
+   },
+   "T5": {
+    "PCCC-CAP-BC": 59630.0
+   },
+   "T4": {
+    "PCCC-CAP-BC": 60850.0
+   },
+   "T3": {
+    "PCCC-CAP-BC": 60810.0
+   },
+   "T2": {
+    "PCCC-CAP-BC": 60810.0
+   },
+   "LUNG": {
+    "PCCC-CAP-BC": 57827.05882352941
+   },
+   "TRET": {
+    "PCCC-CAP-BC": 58308.46153846153
+   },
+   "HAM": {
+    "PCCC-CAP-BC": 30746.000000000015
+   }
+  }
+ },
+ "spr": {
+  "block": {
+   "SAN_THUONG": {
+    "PCCC_VAN_SPR": 1,
+    "PCCC_TRUC_SPR": 1,
+    "PCCC_SPR": 2
+   },
+   "T7": {
+    "PCCC_VAN_SPR": 1,
+    "PCCC_TRUC_SPR": 1,
+    "PCCC_SPR": 27
+   },
+   "T6": {
+    "PCCC_VAN_SPR": 1,
+    "PCCC_TRUC_SPR": 1,
+    "PCCC_SPR": 35
+   },
+   "T5": {
+    "PCCC_VAN_SPR": 1,
+    "PCCC_TRUC_SPR": 1,
+    "PCCC_SPR": 35
+   },
+   "T4": {
+    "PCCC_VAN_SPR": 1,
+    "PCCC_TRUC_SPR": 1,
+    "PCCC_SPR": 35
+   },
+   "T3": {
+    "PCCC_VAN_SPR": 1,
+    "PCCC_TRUC_SPR": 1,
+    "PCCC_SPR": 35
+   },
+   "T2": {
+    "PCCC_VAN_SPR": 1,
+    "PCCC_TRUC_SPR": 1,
+    "PCCC_SPR": 35
+   },
+   "LUNG": {
+    "PCCC_VAN_SPR": 1,
+    "PCCC_TRUC_SPR": 1,
+    "PCCC_SPR": 38
+   },
+   "TRET": {
+    "PCCC_VAN_SPR": 1,
+    "PCCC_TRUC_SPR": 1,
+    "PCCC_SPR": 34
+   },
+   "HAM": {
+    "PCCC_VAN_SPR": 1,
+    "PCCC_TRUC_SPR": 1,
+    "PCCC_SPR": 16
+   }
+  },
+  "dai_mm": {
+   "SAN_THUONG": {
+    "PCCC-ONG-SPR-D25": 2889.0
+   },
+   "T7": {
+    "PCCC-ONG-SPR-D65": 6075.0,
+    "PCCC-ONG-SPR-D25": 74717.0,
+    "PCCC-ONG-SPR-D32": 990.0,
+    "PCCC-ONG-SPR-D40": 3640.0,
+    "PCCC-ONG-SPR-D50": 5830.0
+   },
+   "T6": {
+    "PCCC-ONG-SPR-D80": 350.0,
+    "PCCC-ONG-SPR-D25": 118001.0,
+    "PCCC-ONG-SPR-D32": 685.0,
+    "PCCC-ONG-SPR-D40": 2825.0,
+    "PCCC-ONG-SPR-D50": 5995.0,
+    "PCCC-ONG-SPR-D65": 7555.0
+   },
+   "T5": {
+    "PCCC-ONG-SPR-D80": 350.0,
+    "PCCC-ONG-SPR-D25": 118001.0,
+    "PCCC-ONG-SPR-D32": 685.0,
+    "PCCC-ONG-SPR-D40": 2825.0,
+    "PCCC-ONG-SPR-D50": 5995.0,
+    "PCCC-ONG-SPR-D65": 7555.0
+   },
+   "T4": {
+    "PCCC-ONG-SPR-D80": 350.0,
+    "PCCC-ONG-SPR-D25": 115271.0,
+    "PCCC-ONG-SPR-D32": 640.0,
+    "PCCC-ONG-SPR-D40": 3250.0,
+    "PCCC-ONG-SPR-D50": 5525.0,
+    "PCCC-ONG-SPR-D65": 8045.0
+   },
+   "T3": {
+    "PCCC-ONG-SPR-D80": 350.0,
+    "PCCC-ONG-SPR-D25": 115425.0,
+    "PCCC-ONG-SPR-D32": 610.0,
+    "PCCC-ONG-SPR-D40": 3270.0,
+    "PCCC-ONG-SPR-D50": 5535.0,
+    "PCCC-ONG-SPR-D65": 8045.0
+   },
+   "T2": {
+    "PCCC-ONG-SPR-D80": 350.0,
+    "PCCC-ONG-SPR-D25": 115466.0,
+    "PCCC-ONG-SPR-D32": 645.0,
+    "PCCC-ONG-SPR-D40": 3230.0,
+    "PCCC-ONG-SPR-D50": 5500.0,
+    "PCCC-ONG-SPR-D65": 8045.0
+   },
+   "LUNG": {
+    "PCCC-ONG-SPR-D80": 350.0,
+    "PCCC-ONG-SPR-D25": 115129.0,
+    "PCCC-ONG-SPR-D32": 4940.0,
+    "PCCC-ONG-SPR-D40": 3345.0,
+    "PCCC-ONG-SPR-D50": 4395.0,
+    "PCCC-ONG-SPR-D65": 9160.0
+   },
+   "TRET": {
+    "PCCC-ONG-SPR-D80": 350.0,
+    "PCCC-ONG-SPR-D25": 134319.0,
+    "PCCC-ONG-SPR-D32": 210.0,
+    "PCCC-ONG-SPR-D40": 1450.0,
+    "PCCC-ONG-SPR-D50": 5595.0,
+    "PCCC-ONG-SPR-D65": 9355.0
+   },
+   "HAM": {
+    "PCCC-ONG-SPR-D65": 800.0,
+    "PCCC-ONG-SPR-D25": 40134.0,
+    "PCCC-ONG-SPR-D32": 3920.0,
+    "PCCC-ONG-SPR-D40": 3110.0,
+    "PCCC-ONG-SPR-D50": 2655.0
+   }
+  }
+ },
+ "hong": {
+  "block": {
+   "SAN_THUONG": {
+    "PCCC_CO2": 1,
+    "PCCC_ABC": 1
+   },
+   "T7": {
+    "PCCC_CO2": 2,
+    "PCCC_ABC": 2,
+    "PCCC_TRUC_HONG": 1,
+    "PCCC_FHR": 1
+   },
+   "T6": {
+    "PCCC_CO2": 2,
+    "PCCC_ABC": 2,
+    "PCCC_TRUC_HONG": 1,
+    "PCCC_FHR": 1
+   },
+   "T5": {
+    "PCCC_CO2": 2,
+    "PCCC_ABC": 2,
+    "PCCC_TRUC_HONG": 1,
+    "PCCC_FHR": 1
+   },
+   "T4": {
+    "PCCC_CO2": 2,
+    "PCCC_ABC": 2,
+    "PCCC_TRUC_HONG": 1,
+    "PCCC_FHR": 1
+   },
+   "T3": {
+    "PCCC_CO2": 2,
+    "PCCC_ABC": 2,
+    "PCCC_TRUC_HONG": 1,
+    "PCCC_FHR": 1
+   },
+   "T2": {
+    "PCCC_CO2": 2,
+    "PCCC_ABC": 2,
+    "PCCC_TRUC_HONG": 1,
+    "PCCC_FHR": 1
+   },
+   "LUNG": {
+    "PCCC_CO2": 2,
+    "PCCC_ABC": 2,
+    "PCCC_TRUC_HONG": 1,
+    "PCCC_FHR": 1
+   },
+   "TRET": {
+    "PCCC_HONG_TIEP": 1,
+    "PCCC_CO2": 2,
+    "PCCC_ABC": 2,
+    "PCCC_TRUC_HONG": 1,
+    "PCCC_FHR": 1
+   },
+   "HAM": {
+    "PCCC_TRUC_HONG": 1,
+    "PCCC_CO2": 1,
+    "PCCC_ABC": 1,
+    "PCCC_FHR": 1
+   }
+  },
+  "dai_mm": {
+   "T7": {
+    "PCCC-ONG-HONG-D50": 170.0
+   },
+   "T6": {
+    "PCCC-ONG-HONG-D50": 170.0
+   },
+   "T5": {
+    "PCCC-ONG-HONG-D50": 170.0
+   },
+   "T4": {
+    "PCCC-ONG-HONG-D50": 170.0
+   },
+   "T3": {
+    "PCCC-ONG-HONG-D50": 170.0
+   },
+   "T2": {
+    "PCCC-ONG-HONG-D50": 170.0
+   },
+   "LUNG": {
+    "PCCC-ONG-HONG-D50": 170.0
+   },
+   "TRET": {
+    "PCCC-ONG-HONG-D50": 170.0
+   },
+   "HAM": {
+    "PCCC-ONG-HONG-D50": 170.0
+   }
+  }
+ },
+ "cs": {
+  "block": {
+   "SAN_THUONG": {
+    "PCCC_EXIT": 1,
+    "PCCC_DEN_SC": 3
+   },
+   "T7": {
+    "PCCC_SDTN": 1,
+    "PCCC_EXIT": 2,
+    "PCCC_EXIT_HUONG": 3,
+    "PCCC_DEN_SC": 18,
+    "PCCC_SDTNP": 6
+   },
+   "T6": {
+    "PCCC_SDTN": 1,
+    "PCCC_EXIT": 2,
+    "PCCC_DEN_SC": 12,
+    "PCCC_SDTNP": 9
+   },
+   "T5": {
+    "PCCC_SDTN": 1,
+    "PCCC_EXIT": 2,
+    "PCCC_DEN_SC": 12,
+    "PCCC_SDTNP": 9
+   },
+   "T4": {
+    "PCCC_SDTN": 1,
+    "PCCC_EXIT": 2,
+    "PCCC_DEN_SC": 11,
+    "PCCC_SDTNP": 9
+   },
+   "T3": {
+    "PCCC_SDTN": 1,
+    "PCCC_EXIT": 2,
+    "PCCC_DEN_SC": 11,
+    "PCCC_SDTNP": 9
+   },
+   "T2": {
+    "PCCC_SDTN": 1,
+    "PCCC_EXIT": 2,
+    "PCCC_DEN_SC": 11,
+    "PCCC_SDTNP": 9
+   },
+   "LUNG": {
+    "PCCC_SDTN": 1,
+    "PCCC_EXIT": 2,
+    "PCCC_DEN_SC": 11,
+    "PCCC_SDTNP": 9
+   },
+   "TRET": {
+    "PCCC_SDTN": 1,
+    "PCCC_EXIT": 2,
+    "PCCC_EXIT_HUONG": 8,
+    "PCCC_DEN_SC": 19
+   },
+   "HAM": {
+    "PCCC_EXIT": 1,
+    "PCCC_EXIT_HUONG": 1,
+    "PCCC_DEN_SC": 3
+   }
+  },
+  "dai_mm": {}
+ }
+}

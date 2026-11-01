@@ -1,0 +1,8 @@
+pywin32
+ezdxf
+matplotlib
+numpy
+shapely
+pymupdf
+openpyxl
+Pillow
