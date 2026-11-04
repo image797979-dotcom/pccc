@@ -1,0 +1,52 @@
+# Quét Chợ Tốt định kỳ: tìm tin công nghệ cũ mới đăng, rẻ hơn thị trường ≥ 30 %, giá ≤ 1,2 triệu.
+# Kết quả ghi vào thanh_ly/ket_qua_dinh_ky/moi_nhat.{md,json} trên nhánh main; routine Claude đọc file này để báo.
+# Lịch cron theo UTC: 9h, 12h, 15h, 18h, 21h, 6h giờ Việt Nam. Chạy tay: tab Actions → Run workflow.
+name: Quét Chợ Tốt định kỳ
+
+on:
+  schedule:
+    - cron: "0 2,5,8,11,14,23 * * *"
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - thanh_ly/quet_dinh_ky.py
+      - .github/workflows/quet_chotot.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: quet-chotot
+  cancel-in-progress: false
+
+jobs:
+  quet:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      TZ: Asia/Ho_Chi_Minh
+      PYTHONUTF8: "1"
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Quét tin mới 4 giờ, giá ≤ 1,2 triệu, rẻ hơn thị trường ≥ 30 %
+        run: |
+          mkdir -p thanh_ly/ket_qua_dinh_ky
+          python thanh_ly/quet_dinh_ky.py --gio 4 --von 1200000 --toi-da-in 25 \
+            --ra thanh_ly/ket_qua_dinh_ky/moi_nhat.json > thanh_ly/ket_qua_dinh_ky/moi_nhat.md
+          cat thanh_ly/ket_qua_dinh_ky/moi_nhat.md
+
+      - name: Ghi kết quả vào repo
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add thanh_ly/ket_qua_dinh_ky
+          if git diff --cached --quiet; then echo "Không có thay đổi"; exit 0; fi
+          git commit -m "Quét Chợ Tốt $(date '+%d/%m/%Y %H:%M') [skip ci]"
+          git pull --rebase origin main
+          git push
