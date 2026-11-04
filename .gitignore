@@ -27,3 +27,8 @@ du_an/ks-mini-34nvm/log_*.txt
 du_an/ks-mini-34nvm/kp_mbbt.txt
 du_an/ks-mini-34nvm/doc_tang.txt
 du_an/ks-mini-34nvm/dt.txt
+
+# thanh_ly: dữ liệu quét Chợ Tốt, ảnh, Excel giữ ở máy — chỉ commit script
+thanh_ly/du_lieu/
+thanh_ly/anh/
+thanh_ly/ket_qua/

@@ -29,6 +29,13 @@ Bản vẽ gốc của khách nằm ngoài repo (`D:\dự án\...`). Script dự
 
 Điểm cần người dùng xác nhận ở 34 NVM: cao độ tầng suy từ dim mặt cắt (hầm −3,0 m là giả thiết); tầng hầm không có thang bộ trên bản vẽ; lưu lượng họng 2,5 l/s và thời gian 3 giờ (bản mẫu ghi 2,6 l/s, 0,5 giờ); nhóm F1.2, bậc II, S0 chép theo bản mẫu.
 
+## Việc phụ: `thanh_ly/` (không liên quan PCCC)
+
+Khảo sát giá đồ công nghệ cũ trên Chợ Tốt để mua đi bán lại: `quet_chotot.py` → `ma_tham_so.py` → `phan_tich.py` ra Excel
+kèm ảnh; `quet_dinh_ky.py` (chỉ thư viện chuẩn) chạy bằng GitHub Actions (`.github/workflows/quet_chotot.yml`, trên `main`)
+6 lần/ngày, ghi `thanh_ly/ket_qua_dinh_ky/moi_nhat.{md,json}`; routine Claude trên cloud đọc file đó và đẩy thông báo.
+Dữ liệu quét, ảnh, Excel giữ ở máy (`.gitignore`). Xem `thanh_ly/README.md`.
+
 ## Môi trường
 
 Windows, AutoCAD bản đầy đủ (bản LT không có COM), Python 3. Cài thư viện: `pip install -r requirements.txt`.
