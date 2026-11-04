@@ -1,10 +1,10 @@
 
-## Quét lúc 04/11/2026 12:43 — 10,354 tin, 5 tin mới (≤ 4 giờ) rẻ hơn thị trường ≥ 30%, giá ≤ 1,200,000 đ; 7 tin rẻ bị loại vì mô tả có lỗi/hỏng
+## Quét lúc 04/11/2026 15:44 — 10,351 tin, 5 tin mới (≤ 4 giờ) rẻ hơn thị trường ≥ 30%, giá ≤ 1,200,000 đ; 10 tin rẻ bị loại vì mô tả có lỗi/hỏng
 
 | Ưu tiên | Danh mục | Tin | Giá rao | Trung vị (số tin) | Lệch | Lời ước tính | Chất lượng | Nơi bán | Đăng | Link |
 |---|---|---|---|---|---|---|---|---|---|---|
-| B | Thiết bị đeo | Huawei Watch Fit 3 màu hồng (fit3  Cũ) | 900,000 | 1,350,000 (18) | 33% | 342,000 | 0  | Quận Thanh Khê, Đà Nẵng (Cá nhân) | 2.2 h | https://www.chotot.com/135639123.htm |
-| B | Thiết bị đeo | APPLE WATCH SERIES 3 ĐEN LTE (series3  Cũ) | 600,000 | 1,000,000 (92) | 40% | 320,000 | 0  | Quận Tân Phú, Tp Hồ Chí Minh (Cá nhân) | 2.1 h | https://www.chotot.com/135639256.htm |
-| C | Điện thoại | Apple iPhone Xs 64GB Vàng đồng (iPhone XS 64 GB Cũ) | 1,200,000 | 2,400,000 (70) | 50% | 1,008,000 | 0  | Quận Hoàng Mai, Hà Nội (Cửa hàng) | 2.3 h | https://www.chotot.com/135638968.htm |
-| C | Điện thoại | Xiaomi Mi 11 Lite 8GB/128GB Đen (Mi 11 Lite 128 GB Cũ) | 1,200,000 | 2,200,000 (6) | 45% | 824,000 | 0  | Quận 4, Tp Hồ Chí Minh (Cửa hàng) | 1.3 h | https://www.chotot.com/135621175.htm |
-| C | Điện thoại | Xiaomi Redmi Note 9S 8GB/128GB Xanh (Redmi Note 9S 128 GB Cũ) | 850,000 | 1,275,000 (8) | 33% | 323,000 | 2 tốt: bao test, zin | Quận Bình Thạnh, Tp Hồ Chí Minh (Cửa hàng) | 1.5 h | https://www.chotot.com/135640368.htm |
+| A | Điện thoại | APPLE IPHONE 6S 16GB (iPhone 6S 16 GB Cũ, Quốc tế) | 350,000 | 500,000 (13) | 30% | 110,000 | 1 tốt: không lỗi | Thành phố Thủ Đức, Tp Hồ Chí Minh (Cá nhân) | 1.0 h | https://www.chotot.com/135645122.htm |
+| B | Điện thoại | XIAOMI NOTE 12 XANH DƯƠNG (Redmi Note 12  Cũ) | 1,000,000 | 1,700,000 (29) | 41% | 564,000 | 0  | Thành phố Cao Lãnh, Đồng Tháp (Cá nhân) | 0.4 h | https://www.chotot.com/135646084.htm |
+| C | Máy tính bảng | Apple iPad Air 2 64GB Vàng Quốc tế (iPad Air 2 64 GB Cũ, Quốc tế) | 950,000 | 1,700,000 (32) | 44% | 614,000 | 2 tốt: nguyên zin, zin | Quận 12, Tp Hồ Chí Minh (Cửa hàng) | 2.5 h | https://www.chotot.com/135643002.htm |
+| C | Máy ảnh, máy quay | Máy ảnh DSLR Canon EOS 30D Đen (30d  Cũ) | 800,000 | 1,325,000 (8) | 40% | 419,000 | 1 tốt: hoạt động tốt | Quận Cầu Giấy, Hà Nội (Cửa hàng) | 2.2 h | https://www.chotot.com/135643340.htm |
+| C | Điện thoại | Apple iPhone 8 Vàng hồng, Bạc Đã sử dụng (iPhone 8 64 GB Cũ, Quốc tế) | 600,000 | 999,000 (128) | 40% | 319,000 | 0  | Quận Bình Tân, Tp Hồ Chí Minh (Cửa hàng) | 0.7 h | https://www.chotot.com/135294928.htm |
