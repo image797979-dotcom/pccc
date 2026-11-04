@@ -1,0 +1,68 @@
+{
+  "_ghi_chu": "Giá trị tham khảo, đơn vị mét và m2. Phải đối chiếu bản gốc TCVN/QCVN hiện hành trước khi dùng cho hồ sơ thiết kế; sửa ở đây là mọi script dùng theo. Xem references/tieu-chuan.md.",
+  "sprinkler": {
+    "_nguon": "TCVN 7336:2021 - bảng thông số hệ sprinkler nước theo nhóm nhà/phòng",
+    "nhom": {
+      "1":   {"cuong_do_l_s_m2": 0.08, "dien_tich_tinh_toan_m2": 60,  "thoi_gian_phut": 30, "dien_tich_max_moi_dau_m2": 12, "khoang_cach_max_m": 4.0},
+      "2":   {"cuong_do_l_s_m2": 0.12, "dien_tich_tinh_toan_m2": 120, "thoi_gian_phut": 60, "dien_tich_max_moi_dau_m2": 12, "khoang_cach_max_m": 4.0},
+      "3":   {"cuong_do_l_s_m2": 0.24, "dien_tich_tinh_toan_m2": 120, "thoi_gian_phut": 60, "dien_tich_max_moi_dau_m2": 12, "khoang_cach_max_m": 4.0},
+      "4.1": {"cuong_do_l_s_m2": 0.30, "dien_tich_tinh_toan_m2": 180, "thoi_gian_phut": 60, "dien_tich_max_moi_dau_m2": 12, "khoang_cach_max_m": 4.0}
+    },
+    "ty_le_cach_tuong_max": 0.5,
+    "cach_tuong_min_m": 0.5,
+    "_cach_tuong_min": "Quy ước của người dùng: đầu phun cách tường tối thiểu 500 mm; bố trí đối xứng đều trong phòng",
+    "khoang_cach_min_m": 1.5
+  },
+  "bao_khoi": {
+    "_nguon": "TCVN 5738:2021 - đầu báo khói điểm, theo chiều cao trần",
+    "dim_goc_max_m": 7.2,
+    "_dim_goc": "Quy ước trình bày: dim chéo đầu báo tới góc phòng chỉ ghi khi ≤ 7,2 m (TCVN 7568-1:2025 Hình 2). Giá trị dùng trong code nằm ở trinh_bay.DIM_GOC_MAX_M",
+    "theo_chieu_cao": [
+      {"tran_den_m": 3.5,  "dien_tich_max_m2": 85, "khoang_cach_max_m": 9.0, "cach_tuong_max_m": 4.5},
+      {"tran_den_m": 6.0,  "dien_tich_max_m2": 70, "khoang_cach_max_m": 8.5, "cach_tuong_max_m": 4.0},
+      {"tran_den_m": 10.0, "dien_tich_max_m2": 65, "khoang_cach_max_m": 8.0, "cach_tuong_max_m": 4.0},
+      {"tran_den_m": 12.0, "dien_tich_max_m2": 55, "khoang_cach_max_m": 7.5, "cach_tuong_max_m": 3.5}
+    ]
+  },
+  "bao_nhiet": {
+    "_nguon": "TCVN 5738:2021 - đầu báo nhiệt điểm, theo chiều cao trần",
+    "dim_goc_max_m": 5.1,
+    "theo_chieu_cao": [
+      {"tran_den_m": 3.5, "dien_tich_max_m2": 25, "khoang_cach_max_m": 5.0, "cach_tuong_max_m": 2.5},
+      {"tran_den_m": 6.0, "dien_tich_max_m2": 20, "khoang_cach_max_m": 4.5, "cach_tuong_max_m": 2.0},
+      {"tran_den_m": 9.0, "dien_tich_max_m2": 15, "khoang_cach_max_m": 4.0, "cach_tuong_max_m": 2.0}
+    ]
+  },
+  "thuy_luc": {
+    "_ghi_chu": "Giả thiết tính thuỷ lực sơ bộ. Kiểm tra lại theo TCVN 7336:2021, QCVN 06:2022 và catalogue thiết bị thực tế.",
+    "sprinkler": {
+      "K_l_phut_bar05": 80,
+      "_K": "Hệ số K đầu phun (l/phút/bar^0,5); đầu phun DN15 tiêu chuẩn K80",
+      "P_min_dau_bar": 0.5,
+      "ton_that_van_bao_dong_bar": 0.3,
+      "ton_that_van_khong_che_tang_bar": 0.2,
+      "cao_tran_tren_san_m": 3.0
+    },
+    "hong": {
+      "so_cot_nuoc": 1,
+      "q_moi_cot_l_s": 2.5,
+      "P_tai_van_bar": 2.0,
+      "_P": "Áp lực cần ở van họng để đạt cột nước đặc ~6 m với vòi DN50 dài 20 m, lăng D13 (tra bảng tương ứng)",
+      "tam_van_tren_san_m": 1.25,
+      "thoi_gian_gio": 3
+    },
+    "ong": {
+      "C_hazen_williams": 120,
+      "he_so_phu_kien": 1.2,
+      "_he_so": "Nhân chiều dài ống để kể tổn thất cục bộ (cút, tê, van) khi chưa có sơ đồ phụ kiện",
+      "d_trong_mm": {"25": 26.6, "32": 35.1, "40": 40.9, "50": 52.5, "65": 62.7, "80": 77.9, "90": 90.1, "100": 102.3}
+    },
+    "bom": {"he_so_du_tru_cot_ap": 1.1, "ap_bu_bom_bu_bar": 0.5}
+  },
+  "ky_hieu": {
+    "_ghi_chu": "Chỉ dùng cho chế độ --com (block đơn giản). Chế độ DXF dùng bộ ký hiệu đầy đủ trong ky_hieu.py",
+    "sprinkler":  {"layer": "PCCC-SPR",       "mau": 1, "block": "PCCC_SPR",  "ban_kinh_mm": 175, "chu": null},
+    "bao_khoi":   {"layer": "PCCC-BAO-KHOI",  "mau": 1, "block": "PCCC_DBK",  "ban_kinh_mm": 170, "chu": "S"},
+    "bao_nhiet":  {"layer": "PCCC-BAO-NHIET", "mau": 3, "block": "PCCC_DBN",  "ban_kinh_mm": 170, "chu": "H"}
+  }
+}
